@@ -35,7 +35,7 @@
 <!--        <table tableName="report">-->
 <!--            <generatedKey column="id" sqlStatement="MySql" identity="true" />-->
 <!--        </table>-->
-        <table tableName="violation_code">
+        <table tableName="violation_slice">
             <generatedKey column="id" sqlStatement="MySql" identity="true" />
         </table>
 <!--        <table tableName="violation">-->

@@ -2,10 +2,9 @@ package org.nju.demo.service.impl;
 
 import org.nju.demo.config.Constants;
 import org.nju.demo.dao.VersionPatternRelMapper;
+import org.nju.demo.dao.ViolationCodeMapper;
 import org.nju.demo.dao.ViolationMapper;
-import org.nju.demo.entity.VersionPatternRel;
-import org.nju.demo.entity.Violation;
-import org.nju.demo.entity.ViolationExample;
+import org.nju.demo.entity.*;
 import org.nju.demo.service.ViolationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +19,9 @@ public class ViolationServiceImpl implements ViolationService {
 
     @Autowired
     private VersionPatternRelMapper versionPatternRelMapper;
+
+    @Autowired
+    private ViolationCodeMapper violationCodeMapper;
 
     @Override
     public List<Violation> getViolationList(String versionId, int priority, String type, int state) {
@@ -60,6 +62,17 @@ public class ViolationServiceImpl implements ViolationService {
     }
 
     @Override
+    public List<Violation> getClassifiedViolations() {
+        ViolationExample example = new ViolationExample();
+        ViolationExample.Criteria criteria = example.createCriteria();
+
+        criteria.andStateNotEqualTo(Constants.ViolationState.UNCLASSIFIED)
+                .andStateNotEqualTo(Constants.ViolationState.UNKNOWN);
+
+        return violationMapper.selectByExample(example);
+    }
+
+    @Override
     public int countTrueViolationByPattern(String versionId, String type) {
         ViolationExample violationExample = new ViolationExample();
         ViolationExample.Criteria criteria = violationExample.createCriteria();
@@ -73,7 +86,8 @@ public class ViolationServiceImpl implements ViolationService {
 
     @Override
     public int addViolation(Violation violation) {
-        return violationMapper.insert(violation);
+        violationMapper.insert(violation);
+        return violationMapper.selectLastId();
     }
 
     @Override
@@ -97,5 +111,30 @@ public class ViolationServiceImpl implements ViolationService {
 
         criteria.andVersionIdEqualTo(versionId);
         return violationMapper.deleteByExample(violationExample);
+    }
+
+    @Override
+    public ViolationCode getViolationCodeByViolationId(int violationId) {
+        ViolationCodeExample example = new ViolationCodeExample();
+        ViolationCodeExample.Criteria criteria = example.createCriteria();
+
+        criteria.andViolationIdEqualTo(violationId);
+
+        return violationCodeMapper.selectByExample(example).get(0);
+    }
+
+    @Override
+    public int addViolationCode(ViolationCode violationCode) {
+        return violationCodeMapper.insert(violationCode);
+    }
+
+    @Override
+    public int deleteViolationCodeByViolationId(int violationId) {
+        ViolationCodeExample example = new ViolationCodeExample();
+        ViolationCodeExample.Criteria criteria = example.createCriteria();
+
+        criteria.andViolationIdEqualTo(violationId);
+
+        return violationCodeMapper.deleteByExample(example);
     }
 }

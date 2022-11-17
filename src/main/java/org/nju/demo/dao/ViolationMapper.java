@@ -117,4 +117,8 @@ public interface ViolationMapper {
     })
     int updateByPrimaryKey(Violation record);
 
+    @Select({
+        "select id from violation order by id desc limit 1"
+    })
+    Integer selectLastId();
 }

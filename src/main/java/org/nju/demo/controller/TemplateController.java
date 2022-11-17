@@ -28,8 +28,6 @@ public class TemplateController {
     @Autowired
     private HttpSession session;
 
-    private static String UPLOADED_FOLDER = System.getProperty("user.dir");
-
     @RequestMapping("/view/templates")
     public String viewTemplates(){
         return "template_list";
@@ -52,7 +50,7 @@ public class TemplateController {
             String fileName = templateFile.getOriginalFilename();
             int index = fileName.lastIndexOf('.');
             if (!fileName.substring(index+1).equals("ftl")) return "redirect:/view/templates";
-            String filePath = UPLOADED_FOLDER+"/ftl/"+user.getUsername()+"/";
+            String filePath = Constants.ROOT_PATH+"/ftl/"+user.getUsername()+"/";
             File file =  new File(filePath);
             if (!file.exists()) file.mkdirs();
             filePath += fileName;

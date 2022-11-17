@@ -227,28 +227,28 @@
     }
 
     function extract(){
-        // layer.open({
-        //     title: false,
-        //     content: '特征提取中，请等待',
-        //     anim: 3,
-        //     btn: [],
-        //     yes: function(index, layero) {
-        //
-        //     },
-        //     cancel: function() {
-        //         return false
-        //     }
-        // });
-        // $.ajax({
-        //     url:'/feature',
-        //     type:'get',
-        //     success:function (msg){
-        //         layer.msg("特征提取成功");
-        //         setTimeout(function() {
-        //             location.reload();
-        //         }, 3000);
-        //     }
-        // })
+        layer.open({
+            title: false,
+            content: '特征提取中，请等待',
+            anim: 3,
+            btn: [],
+            yes: function(index, layero) {
+
+            },
+            cancel: function() {
+                return false
+            }
+        });
+        $.ajax({
+            url:'/feature',
+            type:'get',
+            success:function (msg){
+                layer.msg("特征提取成功");
+                setTimeout(function() {
+                    location.reload();
+                }, 3000);
+            }
+        })
     }
     function del(id){
         layer.open({

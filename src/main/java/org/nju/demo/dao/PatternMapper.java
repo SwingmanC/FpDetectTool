@@ -101,4 +101,19 @@ public interface PatternMapper {
             @Result(column="f_num", property="fNum", jdbcType=JdbcType.INTEGER)
     })
     List<Pattern> selectByKeyword(String keyword);
+
+    @Select({
+            "select",
+            "id, pattern_name, category_id, t_num, f_num",
+            "from pattern",
+            "where pattern_name = #{patternName,jdbcType=VARCHAR}"
+    })
+    @Results({
+            @Result(column="id", property="id", jdbcType=JdbcType.INTEGER, id=true),
+            @Result(column="pattern_name", property="patternName", jdbcType=JdbcType.VARCHAR),
+            @Result(column="category_id", property="categoryId", jdbcType=JdbcType.INTEGER),
+            @Result(column="t_num", property="tNum", jdbcType=JdbcType.INTEGER),
+            @Result(column="f_num", property="fNum", jdbcType=JdbcType.INTEGER)
+    })
+    Integer getPatternIdByPatternName(String patternName);
 }

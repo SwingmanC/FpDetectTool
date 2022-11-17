@@ -78,4 +78,17 @@ public interface ViolationCodeMapper {
         "where id = #{id,jdbcType=INTEGER}"
     })
     int updateByPrimaryKey(ViolationCode record);
+
+    @Select({
+            "select",
+            "id, violation_id, snippet",
+            "from violation_code",
+            "where violation_id = #{violationId,jdbcType=INTEGER}"
+    })
+    @Results({
+            @Result(column="id", property="id", jdbcType=JdbcType.INTEGER, id=true),
+            @Result(column="violation_id", property="violationId", jdbcType=JdbcType.INTEGER),
+            @Result(column="snippet", property="snippet", jdbcType=JdbcType.VARCHAR)
+    })
+    ViolationCode selectCodeByViolationId(Integer violationId);
 }

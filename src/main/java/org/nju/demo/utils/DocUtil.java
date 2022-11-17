@@ -3,6 +3,7 @@ package org.nju.demo.utils;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.nju.demo.config.Constants;
 import org.nju.demo.pojo.vo.ViolationDocVO;
 
 import java.io.*;
@@ -11,9 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 public class DocUtil {
-
-    private static String UPLOADED_FOLDER = System.getProperty("user.dir");
-
     public static void generateDoc(List<ViolationDocVO> violationDocVOList, String projectName, String versionName, String username, String filePath) throws IOException, TemplateException {
         Map<String,Object> dataMap = new HashMap<>();
         dataMap.put("violationList",violationDocVOList);
@@ -23,10 +21,10 @@ public class DocUtil {
         configuration.setDefaultEncoding("utf-8");
 
         //configuration.setClassForTemplateLoading(this.getClass(),""); //指定路径的第一种方式(根据某个类的相对路径指定)
-        configuration.setDirectoryForTemplateLoading(new File(UPLOADED_FOLDER+"/ftl"));
+        configuration.setDirectoryForTemplateLoading(new File(Constants.ROOT_PATH+"/ftl"));
 
         File outFile;// 输出文档路径及名称
-        String path = UPLOADED_FOLDER+"/doc/"+username+"/"+projectName+"/";
+        String path = Constants.ROOT_PATH+"/doc/"+username+"/"+projectName+"/";
         outFile = new File(path);
         if (!outFile.exists()) outFile.mkdirs();
         path += versionName+".doc";

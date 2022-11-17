@@ -10,15 +10,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
 
-    private static final String UPLOADED_FOLDER = System.getProperty("user.dir");
-
     @Autowired
     private LoginInterceptor loginInterceptor;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("data/**")
-                .addResourceLocations("file:///"+UPLOADED_FOLDER+"/data/");
+                .addResourceLocations("file:///"+Constants.ROOT_PATH+"/data/");
     }
 
     @Override

@@ -21,6 +21,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -51,9 +53,10 @@ public class MainController {
     private ViolationService violationService;
 
     @Autowired
-    private HttpSession session;
+    private FeatureService featureService;
 
-    private static final String UPLOADED_FOLDER = System.getProperty("user.dir");
+    @Autowired
+    private HttpSession session;
 
     @RequestMapping("/view/projects")
     public String viewProjects(){
@@ -229,7 +232,7 @@ public class MainController {
             for (int i=0;i<classFiles.length;++i){
                 String fileName = classFiles[i].getOriginalFilename();
                 String[] paths = fileName.split("/");
-                String filePath = UPLOADED_FOLDER + "/data/"+user.getUsername()+"/"+project.getProjectName()+"/"+versionName+"/classes/";
+                String filePath = Constants.ROOT_PATH + "/data/"+user.getUsername()+"/"+project.getProjectName()+"/"+versionName+"/classes/";
                 for (int j=0;j<paths.length-1;++j){
                     filePath += paths[j];
                     filePath += "/";
@@ -246,7 +249,7 @@ public class MainController {
             for (int i=0;i<javaFiles.length;++i){
                 String fileName = javaFiles[i].getOriginalFilename();
                 String[] paths = fileName.split("/");
-                String filePath = UPLOADED_FOLDER + "/data/"+user.getUsername()+"/"+project.getProjectName()+"/"+versionName+"/sources/";
+                String filePath = Constants.ROOT_PATH + "/data/"+user.getUsername()+"/"+project.getProjectName()+"/"+versionName+"/sources/";
                 for (int j=0;j<paths.length-1;++j){
                     filePath += paths[j];
                     filePath += "/";
@@ -326,10 +329,22 @@ public class MainController {
             if(lastVersion != null) v1 = violationService.getViolationsByVersionId(lastVersion.getVersionId());
             Match match = new ExactMatch();
             List<Violation> res = match.mark1(v1,v2);
-//            System.out.println(res.size());
 
-            for (Violation Violation : v2){
-                violationService.addViolation(Violation);
+            for (Violation violation : v2){
+                int violationId = violationService.addViolation(violation);
+                if (aVersion.getJavaFilePath() != null && !aVersion.getJavaFilePath().equals("")){
+                    String sourcePath = violation.getSourcePath();
+                    int startLine = violation.getStartLine();
+                    int endLine = violation.getEndLine();
+                    InputStream inputStream = Files.newInputStream(Paths.get(Constants.ROOT_PATH + aVersion.getJavaFilePath() + "/" + sourcePath));
+                    String snippet = CodeUtil.readCodeFromData(inputStream,startLine,endLine);
+                    if (!snippet.equals("")){
+                        ViolationCode violationCode = new ViolationCode();
+                        violationCode.setViolationId(violationId);
+                        violationCode.setSnippet(snippet);
+                        violationService.addViolationCode(violationCode);
+                    }
+                }
             }
 
             if (res != null){
@@ -400,7 +415,7 @@ public class MainController {
         }
         DocUtil.generateDoc(violationDocVOList,project.getProjectName(),version.getVersionName(),user.getUsername(),template.getFilePath());
 
-        String filePath = UPLOADED_FOLDER+"/src/main/resources/static/doc/"+user.getUsername()+"/"+project.getProjectName()+"/"+version.getVersionName()+".doc";
+        String filePath = Constants.ROOT_PATH+"doc/"+user.getUsername()+"/"+project.getProjectName()+"/"+version.getVersionName()+".doc";
         File file = new File(filePath);
         StringBuilder sb = new StringBuilder();
         try{
@@ -428,6 +443,14 @@ public class MainController {
         }
         versionService.deleteVersionByProjectId(projectId);
         return projectService.deleteProject(projectId);
+    }
+
+    @ResponseBody
+    @RequestMapping("/feature")
+    public int extractFeature() throws IOException {
+        AUser user = (AUser) session.getAttribute("user");
+        DataUtil.generateTrainArff(user.getUsername(),featureService.getFeatureList(violationService.getClassifiedViolations()));
+        return 1;
     }
 
 }

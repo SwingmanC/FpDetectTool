@@ -2,9 +2,9 @@ package org.nju.demo.config;
 
 public class Constants {
 
-    public static class Type {
-        public static final String[] fortify = {"Input Validation and Representation","API Abuse","Security Features","Time and State","Errors","Code Quality","Encapsulation","Environment"};
+    public static final String ROOT_PATH = "/Users/sunchen/repo/";
 
+    public static class Type {
         public static String[] findBugs = {"BAD_PRACTICE","STYLE","MALICIOUS_CODE","CORRECTNESS","MT_CORRECTNESS","PERFORMANCE","I18N","SECURITY","EXPERRIMENTAL"};
 
         public static String[] PMD = {"Best Practices","Code Style","Design","Documentation","Error Prone","Multithreading","Performance","Security"};
@@ -28,13 +28,6 @@ public class Constants {
     public static class IsEnable{
         public static final int YES = 1;
         public static final int NO = 0;
-    }
-
-    public static class Priority{
-        public static final String LOW = "Low";
-        public static final String MEDIUM = "Medium";
-        public static final String HIGH = "High";
-        public static final String CRITICAL = "Critical";
     }
 
     public static class VersionState{

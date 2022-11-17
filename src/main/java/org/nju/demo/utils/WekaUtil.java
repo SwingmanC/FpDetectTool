@@ -13,8 +13,6 @@ import java.util.Random;
 
 public class WekaUtil {
 
-    private static String UPLOADED_FOLDER = System.getProperty("user.dir");
-
     public static double[] predict(File trainFile,File testFile){
         double[] res = null;
         try {

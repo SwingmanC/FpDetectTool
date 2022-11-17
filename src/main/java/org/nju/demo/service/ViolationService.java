@@ -2,6 +2,8 @@ package org.nju.demo.service;
 
 import org.nju.demo.entity.VersionPatternRel;
 import org.nju.demo.entity.Violation;
+import org.nju.demo.entity.ViolationCode;
+import org.nju.demo.entity.ViolationExample;
 
 import java.util.List;
 
@@ -15,14 +17,22 @@ public interface ViolationService {
 
     Violation getViolation(int id);
 
+    List<Violation> getClassifiedViolations();
+
+    ViolationCode getViolationCodeByViolationId(int violationId);
+
     int countTrueViolationByPattern(String versionId,String type);
 
     int addViolation(Violation violation);
+
+    int addViolationCode(ViolationCode violationCode);
 
     int addRelation(VersionPatternRel versionPatternRel);
 
     int updateViolation(Violation violation);
 
     int deleteViolationByVersionId(String versionId);
+
+    int deleteViolationCodeByViolationId(int violationId);
 
 }
