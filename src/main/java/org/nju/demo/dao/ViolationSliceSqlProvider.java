@@ -3,81 +3,75 @@ package org.nju.demo.dao;
 import java.util.List;
 import java.util.Map;
 import org.apache.ibatis.jdbc.SQL;
-import org.nju.demo.entity.AVersion;
-import org.nju.demo.entity.AVersionExample.Criteria;
-import org.nju.demo.entity.AVersionExample.Criterion;
-import org.nju.demo.entity.AVersionExample;
+import org.nju.demo.entity.ViolationSliceExample.Criteria;
+import org.nju.demo.entity.ViolationSliceExample.Criterion;
+import org.nju.demo.entity.ViolationSliceExample;
+import org.nju.demo.entity.ViolationSliceWithBLOBs;
 
-public class AVersionSqlProvider {
+public class ViolationSliceSqlProvider {
 
-    public String countByExample(AVersionExample example) {
+    public String countByExample(ViolationSliceExample example) {
         SQL sql = new SQL();
-        sql.SELECT("count(*)").FROM("a_version");
+        sql.SELECT("count(*)").FROM("violation_slice");
         applyWhere(sql, example, false);
         return sql.toString();
     }
 
-    public String deleteByExample(AVersionExample example) {
+    public String deleteByExample(ViolationSliceExample example) {
         SQL sql = new SQL();
-        sql.DELETE_FROM("a_version");
+        sql.DELETE_FROM("violation_slice");
         applyWhere(sql, example, false);
         return sql.toString();
     }
 
-    public String insertSelective(AVersion record) {
+    public String insertSelective(ViolationSliceWithBLOBs record) {
         SQL sql = new SQL();
-        sql.INSERT_INTO("a_version");
+        sql.INSERT_INTO("violation_slice");
         
-        if (record.getVersionId() != null) {
-            sql.VALUES("version_id", "#{versionId,jdbcType=VARCHAR}");
+        if (record.getViolationId() != null) {
+            sql.VALUES("violation_id", "#{violationId,jdbcType=INTEGER}");
         }
         
-        if (record.getVersionName() != null) {
-            sql.VALUES("version_name", "#{versionName,jdbcType=VARCHAR}");
+        if (record.getSnippet() != null) {
+            sql.VALUES("snippet", "#{snippet,jdbcType=LONGVARCHAR}");
         }
         
-        if (record.getClassFilePath() != null) {
-            sql.VALUES("class_file_path", "#{classFilePath,jdbcType=VARCHAR}");
-        }
-        
-        if (record.getJavaFilePath() != null) {
-            sql.VALUES("java_file_path", "#{javaFilePath,jdbcType=VARCHAR}");
-        }
-        
-        if (record.getJarFilePath() != null) {
-            sql.VALUES("jar_file_path", "#{jarFilePath,jdbcType=VARCHAR}");
-        }
-        
-        if (record.getCreateTime() != null) {
-            sql.VALUES("create_time", "#{createTime,jdbcType=TIMESTAMP}");
-        }
-        
-        if (record.getProjectId() != null) {
-            sql.VALUES("project_id", "#{projectId,jdbcType=VARCHAR}");
-        }
-        
-        if (record.getLastId() != null) {
-            sql.VALUES("last_id", "#{lastId,jdbcType=VARCHAR}");
+        if (record.getSnapshot() != null) {
+            sql.VALUES("snapshot", "#{snapshot,jdbcType=LONGVARCHAR}");
         }
         
         return sql.toString();
     }
 
-    public String selectByExample(AVersionExample example) {
+    public String selectByExampleWithBLOBs(ViolationSliceExample example) {
         SQL sql = new SQL();
         if (example != null && example.isDistinct()) {
-            sql.SELECT_DISTINCT("version_id");
+            sql.SELECT_DISTINCT("id");
         } else {
-            sql.SELECT("version_id");
+            sql.SELECT("id");
         }
-        sql.SELECT("version_name");
-        sql.SELECT("class_file_path");
-        sql.SELECT("java_file_path");
-        sql.SELECT("jar_file_path");
-        sql.SELECT("create_time");
-        sql.SELECT("project_id");
-        sql.SELECT("last_id");
-        sql.FROM("a_version");
+        sql.SELECT("violation_id");
+        sql.SELECT("snippet");
+        sql.SELECT("snapshot");
+        sql.FROM("violation_slice");
+        applyWhere(sql, example, false);
+        
+        if (example != null && example.getOrderByClause() != null) {
+            sql.ORDER_BY(example.getOrderByClause());
+        }
+        
+        return sql.toString();
+    }
+
+    public String selectByExample(ViolationSliceExample example) {
+        SQL sql = new SQL();
+        if (example != null && example.isDistinct()) {
+            sql.SELECT_DISTINCT("id");
+        } else {
+            sql.SELECT("id");
+        }
+        sql.SELECT("violation_id");
+        sql.FROM("violation_slice");
         applyWhere(sql, example, false);
         
         if (example != null && example.getOrderByClause() != null) {
@@ -88,104 +82,80 @@ public class AVersionSqlProvider {
     }
 
     public String updateByExampleSelective(Map<String, Object> parameter) {
-        AVersion record = (AVersion) parameter.get("record");
-        AVersionExample example = (AVersionExample) parameter.get("example");
+        ViolationSliceWithBLOBs record = (ViolationSliceWithBLOBs) parameter.get("record");
+        ViolationSliceExample example = (ViolationSliceExample) parameter.get("example");
         
         SQL sql = new SQL();
-        sql.UPDATE("a_version");
+        sql.UPDATE("violation_slice");
         
-        if (record.getVersionId() != null) {
-            sql.SET("version_id = #{record.versionId,jdbcType=VARCHAR}");
+        if (record.getId() != null) {
+            sql.SET("id = #{record.id,jdbcType=INTEGER}");
         }
         
-        if (record.getVersionName() != null) {
-            sql.SET("version_name = #{record.versionName,jdbcType=VARCHAR}");
+        if (record.getViolationId() != null) {
+            sql.SET("violation_id = #{record.violationId,jdbcType=INTEGER}");
         }
         
-        if (record.getClassFilePath() != null) {
-            sql.SET("class_file_path = #{record.classFilePath,jdbcType=VARCHAR}");
+        if (record.getSnippet() != null) {
+            sql.SET("snippet = #{record.snippet,jdbcType=LONGVARCHAR}");
         }
         
-        if (record.getJavaFilePath() != null) {
-            sql.SET("java_file_path = #{record.javaFilePath,jdbcType=VARCHAR}");
+        if (record.getSnapshot() != null) {
+            sql.SET("snapshot = #{record.snapshot,jdbcType=LONGVARCHAR}");
         }
         
-        if (record.getJarFilePath() != null) {
-            sql.SET("jar_file_path = #{record.jarFilePath,jdbcType=VARCHAR}");
-        }
+        applyWhere(sql, example, true);
+        return sql.toString();
+    }
+
+    public String updateByExampleWithBLOBs(Map<String, Object> parameter) {
+        SQL sql = new SQL();
+        sql.UPDATE("violation_slice");
         
-        if (record.getCreateTime() != null) {
-            sql.SET("create_time = #{record.createTime,jdbcType=TIMESTAMP}");
-        }
+        sql.SET("id = #{record.id,jdbcType=INTEGER}");
+        sql.SET("violation_id = #{record.violationId,jdbcType=INTEGER}");
+        sql.SET("snippet = #{record.snippet,jdbcType=LONGVARCHAR}");
+        sql.SET("snapshot = #{record.snapshot,jdbcType=LONGVARCHAR}");
         
-        if (record.getProjectId() != null) {
-            sql.SET("project_id = #{record.projectId,jdbcType=VARCHAR}");
-        }
-        
-        if (record.getLastId() != null) {
-            sql.SET("last_id = #{record.lastId,jdbcType=VARCHAR}");
-        }
-        
+        ViolationSliceExample example = (ViolationSliceExample) parameter.get("example");
         applyWhere(sql, example, true);
         return sql.toString();
     }
 
     public String updateByExample(Map<String, Object> parameter) {
         SQL sql = new SQL();
-        sql.UPDATE("a_version");
+        sql.UPDATE("violation_slice");
         
-        sql.SET("version_id = #{record.versionId,jdbcType=VARCHAR}");
-        sql.SET("version_name = #{record.versionName,jdbcType=VARCHAR}");
-        sql.SET("class_file_path = #{record.classFilePath,jdbcType=VARCHAR}");
-        sql.SET("java_file_path = #{record.javaFilePath,jdbcType=VARCHAR}");
-        sql.SET("jar_file_path = #{record.jarFilePath,jdbcType=VARCHAR}");
-        sql.SET("create_time = #{record.createTime,jdbcType=TIMESTAMP}");
-        sql.SET("project_id = #{record.projectId,jdbcType=VARCHAR}");
-        sql.SET("last_id = #{record.lastId,jdbcType=VARCHAR}");
+        sql.SET("id = #{record.id,jdbcType=INTEGER}");
+        sql.SET("violation_id = #{record.violationId,jdbcType=INTEGER}");
         
-        AVersionExample example = (AVersionExample) parameter.get("example");
+        ViolationSliceExample example = (ViolationSliceExample) parameter.get("example");
         applyWhere(sql, example, true);
         return sql.toString();
     }
 
-    public String updateByPrimaryKeySelective(AVersion record) {
+    public String updateByPrimaryKeySelective(ViolationSliceWithBLOBs record) {
         SQL sql = new SQL();
-        sql.UPDATE("a_version");
+        sql.UPDATE("violation_slice");
         
-        if (record.getVersionName() != null) {
-            sql.SET("version_name = #{versionName,jdbcType=VARCHAR}");
+        if (record.getViolationId() != null) {
+            sql.SET("violation_id = #{violationId,jdbcType=INTEGER}");
         }
         
-        if (record.getClassFilePath() != null) {
-            sql.SET("class_file_path = #{classFilePath,jdbcType=VARCHAR}");
+        if (record.getSnippet() != null) {
+            sql.SET("snippet = #{snippet,jdbcType=LONGVARCHAR}");
         }
         
-        if (record.getJavaFilePath() != null) {
-            sql.SET("java_file_path = #{javaFilePath,jdbcType=VARCHAR}");
+        if (record.getSnapshot() != null) {
+            sql.SET("snapshot = #{snapshot,jdbcType=LONGVARCHAR}");
         }
         
-        if (record.getJarFilePath() != null) {
-            sql.SET("jar_file_path = #{jarFilePath,jdbcType=VARCHAR}");
-        }
-        
-        if (record.getCreateTime() != null) {
-            sql.SET("create_time = #{createTime,jdbcType=TIMESTAMP}");
-        }
-        
-        if (record.getProjectId() != null) {
-            sql.SET("project_id = #{projectId,jdbcType=VARCHAR}");
-        }
-        
-        if (record.getLastId() != null) {
-            sql.SET("last_id = #{lastId,jdbcType=VARCHAR}");
-        }
-        
-        sql.WHERE("version_id = #{versionId,jdbcType=VARCHAR}");
+        sql.WHERE("id = #{id,jdbcType=INTEGER}");
         
         return sql.toString();
     }
 
-    protected void applyWhere(SQL sql, AVersionExample example, boolean includeExamplePhrase) {
+    protected void applyWhere(SQL sql, ViolationSliceExample example, boolean includeExamplePhrase) {
         if (example == null) {
             return;
         }

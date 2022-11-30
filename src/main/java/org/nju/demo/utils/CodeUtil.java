@@ -210,21 +210,4 @@ public class CodeUtil {
         return s.substring(index);
     }
 
-    public static void main(String[] args) throws IOException {
-        int index = 3;
-        int cnt = 1;
-        for (int i=0;i<3;++i){
-            for (int j=0;j<index;++j){
-                System.out.print(" ");
-            }
-            for (int j=0;j<cnt*2-1;++j){
-                System.out.print("*");
-            }
-            System.out.println();
-            cnt++;
-            index--;
-        }
-    }
-
-
 }

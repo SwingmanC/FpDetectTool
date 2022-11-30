@@ -10,14 +10,14 @@ function predict(){
         showRefresh: true, //刷新按钮
         columns: [{
             title: '#',
-            field: 'id',
+            field: 'cnt',
             sortable: true,
             formatter: function(value, row, index) {
                 return index + 1;
             }
         }, {
-            title: '漏洞模式',
-            field: 'patternName',
+            title: '漏洞类型',
+            field: 'type',
             sortable: true,
         }, {
             title: '优先级',
@@ -25,16 +25,17 @@ function predict(){
             sortable: true
         }, {
             title: '文件名称',
-            field: 'fileName',
+            field: 'sourcePath',
             sortable: true,
         }, {
-            title: '正报概率',
+            title: '正报率',
             field: 'likelihood',
             sortable: true,
         }, {
             title: '预测结果',
             field: 'state',
             sortable: true,
+            formatter: stateFormatter
         }, {
             field: 'operate',
             title: '操作',
@@ -44,15 +45,20 @@ function predict(){
 }
 
 function operateFormatter(value,row,index){
-    return "<a href='#' title='更新' onclick='update(\"" + row.issueId + "\",\"" + row.state + "\")'><i class='fa fa-edit'></i> </a>"
+    return "<a href='#' title='更新' onclick='update(\"" + row.id + "\",\"" + row.state + "\")'><i class='fa fa-edit'></i> </a>"
 }
 
-function update(issueId,state){
+function stateFormatter(value,row,index){
+    if (row.state === 0) return "False";
+    else return "True";
+}
+
+function update(violationId,state){
     let f;
-    if (state === 'True') f = 1;
+    if (state === 1) f = 1;
     else f = 0;
     $.ajax({
-        url:'/updateState/'+issueId+"/"+f,
+        url:'/updateState/'+violationId+"/"+f,
         method:'get',
         dataType:'json',
         success:function (msg){

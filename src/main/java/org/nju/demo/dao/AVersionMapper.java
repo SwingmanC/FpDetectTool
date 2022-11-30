@@ -32,12 +32,12 @@ public interface AVersionMapper {
     @Insert({
         "insert into a_version (version_id, version_name, ",
         "class_file_path, java_file_path, ",
-        "create_time, project_id, ",
-        "last_id)",
+        "jar_file_path, create_time, ",
+        "project_id, last_id)",
         "values (#{versionId,jdbcType=VARCHAR}, #{versionName,jdbcType=VARCHAR}, ",
         "#{classFilePath,jdbcType=VARCHAR}, #{javaFilePath,jdbcType=VARCHAR}, ",
-        "#{createTime,jdbcType=TIMESTAMP}, #{projectId,jdbcType=VARCHAR}, ",
-        "#{lastId,jdbcType=VARCHAR})"
+        "#{jarFilePath,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, ",
+        "#{projectId,jdbcType=VARCHAR}, #{lastId,jdbcType=VARCHAR})"
     })
     int insert(AVersion record);
 
@@ -50,6 +50,7 @@ public interface AVersionMapper {
         @Result(column="version_name", property="versionName", jdbcType=JdbcType.VARCHAR),
         @Result(column="class_file_path", property="classFilePath", jdbcType=JdbcType.VARCHAR),
         @Result(column="java_file_path", property="javaFilePath", jdbcType=JdbcType.VARCHAR),
+        @Result(column="jar_file_path", property="jarFilePath", jdbcType=JdbcType.VARCHAR),
         @Result(column="create_time", property="createTime", jdbcType=JdbcType.TIMESTAMP),
         @Result(column="project_id", property="projectId", jdbcType=JdbcType.VARCHAR),
         @Result(column="last_id", property="lastId", jdbcType=JdbcType.VARCHAR)
@@ -58,8 +59,8 @@ public interface AVersionMapper {
 
     @Select({
         "select",
-        "version_id, version_name, class_file_path, java_file_path, create_time, project_id, ",
-        "last_id",
+        "version_id, version_name, class_file_path, java_file_path, jar_file_path, create_time, ",
+        "project_id, last_id",
         "from a_version",
         "where version_id = #{versionId,jdbcType=VARCHAR}"
     })
@@ -68,6 +69,7 @@ public interface AVersionMapper {
         @Result(column="version_name", property="versionName", jdbcType=JdbcType.VARCHAR),
         @Result(column="class_file_path", property="classFilePath", jdbcType=JdbcType.VARCHAR),
         @Result(column="java_file_path", property="javaFilePath", jdbcType=JdbcType.VARCHAR),
+        @Result(column="jar_file_path", property="jarFilePath", jdbcType=JdbcType.VARCHAR),
         @Result(column="create_time", property="createTime", jdbcType=JdbcType.TIMESTAMP),
         @Result(column="project_id", property="projectId", jdbcType=JdbcType.VARCHAR),
         @Result(column="last_id", property="lastId", jdbcType=JdbcType.VARCHAR)
@@ -88,6 +90,7 @@ public interface AVersionMapper {
         "set version_name = #{versionName,jdbcType=VARCHAR},",
           "class_file_path = #{classFilePath,jdbcType=VARCHAR},",
           "java_file_path = #{javaFilePath,jdbcType=VARCHAR},",
+          "jar_file_path = #{jarFilePath,jdbcType=VARCHAR},",
           "create_time = #{createTime,jdbcType=TIMESTAMP},",
           "project_id = #{projectId,jdbcType=VARCHAR},",
           "last_id = #{lastId,jdbcType=VARCHAR}",

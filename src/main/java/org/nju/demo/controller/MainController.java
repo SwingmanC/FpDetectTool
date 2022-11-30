@@ -23,6 +23,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.rmi.server.ExportException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -54,6 +55,9 @@ public class MainController {
 
     @Autowired
     private FeatureService featureService;
+
+    @Autowired
+    private SliceService sliceService;
 
     @Autowired
     private HttpSession session;
@@ -198,6 +202,30 @@ public class MainController {
     }
 
     @ResponseBody
+    @RequestMapping("/violation/code/{violationId}")
+    public ViolationCode getViolationCode(@PathVariable("violationId") int violationId){
+        return violationService.getViolationCodeByViolationId(violationId);
+    }
+
+    @ResponseBody
+    @RequestMapping("/violation/slice/{violationId}")
+    public ViolationSliceWithBLOBs getViolationSlice(@PathVariable("violationId") int violationId){
+        return sliceService.getViolationSliceByViolationId(violationId);
+    }
+
+    @ResponseBody
+    @RequestMapping("/editSlice")
+    public int editViolationSlice(@RequestParam("violationId") int violationId,
+                                  @RequestParam("snapshot") String snapshot){
+        ViolationSliceWithBLOBs violationSlice = sliceService.getViolationSliceByViolationId(violationId);
+        if(!snapshot.equals("")) {
+            violationSlice.setSnapshot(snapshot);
+        }
+        return sliceService.updateViolationSlice(violationSlice);
+    }
+
+
+    @ResponseBody
     @RequestMapping(value = "/addProject",method = RequestMethod.POST)
     public int addProjects(@RequestParam("projectName") String projectName,
                            @RequestParam("description") String description){
@@ -219,7 +247,8 @@ public class MainController {
     @RequestMapping("/addVersion")
     public String addVersion(@RequestParam("versionName") String versionName,
                              @RequestParam("javaFiles") MultipartFile[] javaFiles,
-                             @RequestParam("classFiles") MultipartFile[] classFiles) throws IOException {
+                             @RequestParam("classFiles") MultipartFile[] classFiles,
+                             @RequestParam("jarFile") MultipartFile jarFile){
         AVersion aVersion = new AVersion();
         AUser user = (AUser) session.getAttribute("user");
         Project project = (Project) session.getAttribute("project");
@@ -228,38 +257,56 @@ public class MainController {
         if (versionList.size()!=0) return "redirect:/back_versions";
 
         File file = null;
-        if(classFiles != null && classFiles.length > 0){
-            for (int i=0;i<classFiles.length;++i){
-                String fileName = classFiles[i].getOriginalFilename();
-                String[] paths = fileName.split("/");
-                String filePath = Constants.ROOT_PATH + "/data/"+user.getUsername()+"/"+project.getProjectName()+"/"+versionName+"/classes/";
-                for (int j=0;j<paths.length-1;++j){
-                    filePath += paths[j];
-                    filePath += "/";
-                }
-                file = new File(filePath);
-                if (!file.exists()) file.mkdirs();
-                filePath += paths[paths.length-1];
-                file = new File(filePath);
-                classFiles[i].transferTo(file);
-            }
-        }
 
-        if(javaFiles != null && javaFiles.length > 0){
-            for (int i=0;i<javaFiles.length;++i){
-                String fileName = javaFiles[i].getOriginalFilename();
-                String[] paths = fileName.split("/");
-                String filePath = Constants.ROOT_PATH + "/data/"+user.getUsername()+"/"+project.getProjectName()+"/"+versionName+"/sources/";
-                for (int j=0;j<paths.length-1;++j){
-                    filePath += paths[j];
-                    filePath += "/";
-                }
-                file = new File(filePath);
+        try{
+            if (jarFile != null){
+                String fileName = jarFile.getOriginalFilename();
+                int index = fileName.lastIndexOf('.');
+                if (!fileName.substring(index+1).equals("jar")) return "redirect:/back_versions";
+                String filePath = Constants.ROOT_PATH+"/data/"+user.getUsername()+"/"+project.getProjectName()+"/"+versionName+"/jar/";
+                file =  new File(filePath);
                 if (!file.exists()) file.mkdirs();
-                filePath += paths[paths.length-1];
+                filePath += fileName;
                 file = new File(filePath);
-                javaFiles[i].transferTo(file);
+                jarFile.transferTo(file);
+                aVersion.setJarFilePath("data/"+user.getUsername()+"/"+project.getProjectName()+"/"+versionName+"/jar/"+fileName);
             }
+
+            if(classFiles != null && classFiles.length > 0){
+                for (int i=0;i<classFiles.length;++i){
+                    String fileName = classFiles[i].getOriginalFilename();
+                    String[] paths = fileName.split("/");
+                    String filePath = Constants.ROOT_PATH + "/data/"+user.getUsername()+"/"+project.getProjectName()+"/"+versionName+"/classes/";
+                    for (int j=0;j<paths.length-1;++j){
+                        filePath += paths[j];
+                        filePath += "/";
+                    }
+                    file = new File(filePath);
+                    if (!file.exists()) file.mkdirs();
+                    filePath += paths[paths.length-1];
+                    file = new File(filePath);
+                    classFiles[i].transferTo(file);
+                }
+            }
+
+            if(javaFiles != null && javaFiles.length > 0){
+                for (int i=0;i<javaFiles.length;++i){
+                    String fileName = javaFiles[i].getOriginalFilename();
+                    String[] paths = fileName.split("/");
+                    String filePath = Constants.ROOT_PATH + "/data/"+user.getUsername()+"/"+project.getProjectName()+"/"+versionName+"/sources/";
+                    for (int j=0;j<paths.length-1;++j){
+                        filePath += paths[j];
+                        filePath += "/";
+                    }
+                    file = new File(filePath);
+                    if (!file.exists()) file.mkdirs();
+                    filePath += paths[paths.length-1];
+                    file = new File(filePath);
+                    javaFiles[i].transferTo(file);
+                }
+            }
+        }catch (Exception e){
+            throw new RuntimeException(e);
         }
 
         aVersion.setVersionId(StringUtil.generateStringId());
@@ -316,6 +363,7 @@ public class MainController {
                 versionPatternRel.setPatternId(pattern.getId());
                 versionPatternRel.setVersionId(versionId);
                 int vpid = violationService.addRelation(versionPatternRel);
+                if (vpid == 0) continue;
                 PatternStatistics patternStatistics = new PatternStatistics();
                 patternStatistics.setvPId(vpid);
                 patternStatistics.setViolationNum(cnt);
@@ -336,13 +384,17 @@ public class MainController {
                     String sourcePath = violation.getSourcePath();
                     int startLine = violation.getStartLine();
                     int endLine = violation.getEndLine();
-                    InputStream inputStream = Files.newInputStream(Paths.get(Constants.ROOT_PATH + aVersion.getJavaFilePath() + "/" + sourcePath));
-                    String snippet = CodeUtil.readCodeFromData(inputStream,startLine,endLine);
-                    if (!snippet.equals("")){
-                        ViolationCode violationCode = new ViolationCode();
-                        violationCode.setViolationId(violationId);
-                        violationCode.setSnippet(snippet);
-                        violationService.addViolationCode(violationCode);
+                    try{
+                        InputStream inputStream = Files.newInputStream(Paths.get(Constants.ROOT_PATH + aVersion.getJavaFilePath() + "/" + sourcePath));
+                        String snippet = CodeUtil.readCodeFromData(inputStream,startLine,endLine);
+                        if (!snippet.equals("")){
+                            ViolationCode violationCode = new ViolationCode();
+                            violationCode.setViolationId(violationId);
+                            violationCode.setSnippet(snippet);
+                            violationService.addViolationCode(violationCode);
+                        }
+                    }catch (Exception e){
+//                        System.out.println(e);
                     }
                 }
             }
@@ -446,11 +498,87 @@ public class MainController {
     }
 
     @ResponseBody
-    @RequestMapping("/feature")
-    public int extractFeature() throws IOException {
-        AUser user = (AUser) session.getAttribute("user");
-        DataUtil.generateTrainArff(user.getUsername(),featureService.getFeatureList(violationService.getClassifiedViolations()));
+    @RequestMapping("/slice")
+    public int extractSlice() {
+        AVersion version = (AVersion) session.getAttribute("version");
+        List<Violation> violationList = violationService.getViolationsByVersionId(version.getVersionId());
+        for (Violation violation : violationList){
+            try {
+                System.out.println("警告"+violation.getId()+"切片提取开始");
+                sliceService.addViolationSlice(version,violation);
+                System.out.println("警告"+violation.getId()+"切片提取结束");
+            }catch (Exception e){
+//                System.out.println("警告"+violation.getId()+"切片提取失败");
+            }
+        }
         return 1;
+    }
+
+    @ResponseBody
+    @RequestMapping("/feature")
+    public int extractFeature(){
+        AUser user = (AUser) session.getAttribute("user");
+        try {
+            DataUtil.generateTrainArff(user.getUsername(),featureService.getFeatureList(violationService.getClassifiedViolations()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return 1;
+    }
+
+    @ResponseBody
+    @RequestMapping("/predict")
+    public List<ViolationVO> predictViolation(){
+        AVersion version = (AVersion) session.getAttribute("version");
+        AUser user = (AUser) session.getAttribute("user");
+        List<Violation> violationList = violationService.getViolationList(version.getVersionId(),0,"",Constants.ViolationState.UNCLASSIFIED);
+        List<ViolationVO> violationVOList = new ArrayList<>();
+        try {
+            DataUtil.generateTestArff(user.getUsername(), featureService.getFeatureList(violationList));
+            File trainFile = new File(Constants.ROOT_PATH+"data/"+user.getUsername()+"/train.arff");
+            File testFile = new File(Constants.ROOT_PATH+"data/"+user.getUsername()+"/test.arff");
+            double[] res = WekaUtil.predict(trainFile,testFile);
+            int index = 0;
+            for (Violation violation : violationList){
+                ViolationVO violationVO = new ViolationVO();
+                violationVO.setId(violation.getId());
+                violationVO.setType(violation.getType());
+                violationVO.setCategory(violation.getCategory());
+                violationVO.setClassName(violation.getClassName());
+                violationVO.setPriority(violation.getPriority());
+                violationVO.setSourcePath(violation.getSourcePath());
+                violationVO.setMethodName(violation.getMethodName());
+                violationVO.setStartLine(violation.getStartLine());
+                violationVO.setEndLine(violation.getEndLine());
+                violationVO.setLikelihood(res[index]);
+                if (res[index]<0.5) violationVO.setState(Constants.ViolationState.FALSE);
+                else violationVO.setState(Constants.ViolationState.TRUE);
+                index++;
+                violationVOList.add(violationVO);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return violationVOList;
+    }
+
+    @ResponseBody
+    @RequestMapping("/updateState/{violationId}/{state}")
+    public int updateState(@PathVariable("violationId") int violationId,
+                           @PathVariable("state") int state){
+        Violation violation = violationService.getViolation(violationId);
+        Pattern pattern = patternService.getPatternByPatternName(violation.getType());
+
+        if (state==0){
+            violation.setState(Constants.ViolationState.FALSE);
+            pattern.setfNum(pattern.getfNum()+1);
+        }
+        else{
+            violation.setState(Constants.ViolationState.TRUE);
+            pattern.settNum(pattern.gettNum()+1);
+        }
+        patternService.updatePattern(pattern);
+        return violationService.updateViolation(violation);
     }
 
 }

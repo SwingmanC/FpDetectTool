@@ -30,6 +30,9 @@ public class FeatureServiceImpl implements FeatureService {
     private ViolationCodeMapper violationCodeMapper;
 
     @Autowired
+    private ViolationSliceMapper violationSliceMapper;
+
+    @Autowired
     private ViolationMapper violationMapper;
 
     @Autowired
@@ -142,7 +145,18 @@ public class FeatureServiceImpl implements FeatureService {
         SliceFeature sliceFeature = new SliceFeature();
 
         //Todo
+        ViolationSliceExample example = new ViolationSliceExample();
+        ViolationSliceExample.Criteria criteria = example.createCriteria();
 
+        criteria.andViolationIdEqualTo(violation.getId());
+        List<ViolationSliceWithBLOBs> violationSliceList = violationSliceMapper.selectByExampleWithBLOBs(example);
+        if (violationSliceList.size() > 0) {
+            ViolationSliceWithBLOBs violationSlice = violationSliceList.get(0);
+            String snippet = violationSlice.getSnippet();
+            if (snippet.equals("")) return sliceFeature;
+            sliceFeature.setCodeLine(snippet.split("\n").length);
+            sliceFeature.setBranchNum(CodeUtil.countBranchNum(snippet));
+        }
         return sliceFeature;
     }
 

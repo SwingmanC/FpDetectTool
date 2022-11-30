@@ -81,7 +81,7 @@ public class ViolationServiceImpl implements ViolationService {
                 .andTypeEqualTo(type)
                 .andStateEqualTo(Constants.ViolationState.TRUE);
 
-        return 0;
+        return (int) violationMapper.countByExample(violationExample);
     }
 
     @Override
@@ -92,6 +92,15 @@ public class ViolationServiceImpl implements ViolationService {
 
     @Override
     public int addRelation(VersionPatternRel versionPatternRel) {
+        VersionPatternRelExample example = new VersionPatternRelExample();
+        VersionPatternRelExample.Criteria criteria = example.createCriteria();
+
+        criteria.andVersionIdEqualTo(versionPatternRel.getVersionId())
+                .andPatternIdEqualTo(versionPatternRel.getPatternId());
+
+        List<VersionPatternRel> versionPatternRelList = versionPatternRelMapper.selectByExample(example);
+        if (versionPatternRelList.size() > 0) return 0;
+
         VersionPatternRel last = versionPatternRelMapper.selectLastRecord();
         if(last==null) versionPatternRel.setId(1);
         else versionPatternRel.setId(last.getId()+1);
@@ -120,7 +129,9 @@ public class ViolationServiceImpl implements ViolationService {
 
         criteria.andViolationIdEqualTo(violationId);
 
-        return violationCodeMapper.selectByExample(example).get(0);
+        List<ViolationCode> violationCodeList = violationCodeMapper.selectByExample(example);
+        if (violationCodeList.size() > 0) return violationCodeList.get(0);
+        else return null;
     }
 
     @Override

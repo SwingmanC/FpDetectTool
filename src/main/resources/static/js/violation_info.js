@@ -24,11 +24,11 @@ $(function () {
         nodeIcon: 'glyphicon glyphicon-bookmark',
     });
 });
-function watchViolation(violationId) {
+function watchViolation() {
+    let violationId = window.localStorage.getItem('violationId');
     $.ajax({
         url:'/violation/'+violationId,
         success:function (data) {
-            $('#patternNameLabel').text(data.type);
             let violationInfo = {
                 text:'主要信息',
                 nodes:[
@@ -87,6 +87,53 @@ function watchKnowledge(violationId){
                 collapseIcon: 'glyphicon glyphicon-chevron-down',
                 nodeIcon: 'glyphicon glyphicon-bookmark'
             })
+        }
+    })
+}
+
+function watchCode(){
+    let violationId = window.localStorage.getItem('violationId');
+    $.ajax({
+        url:'/violation/code/'+violationId,
+        method:'get',
+        success:function (msg){
+            if (msg !== null){
+                $("#codeInfo").text(msg.snippet);
+            }
+            else{
+                $("#codeInfo").text("");
+            }
+        }
+    })
+}
+
+function watchSlice(){
+    let violationId = window.localStorage.getItem('violationId');
+    $.ajax({
+        url: '/violation/slice/'+violationId,
+        method: 'get',
+        success: function (msg){
+            if (msg !== null){
+                $("#codeInfo").text(msg.snippet);
+                $("#patternInfo").val(msg.snapshot);
+            }
+            else{
+                $("#codeInfo").text("");
+            }
+        }
+    })
+}
+function editCodePattern(){
+    let violationId = window.localStorage.getItem('violationId');
+    $.ajax({
+        url: '/editSlice',
+        method: 'post',
+        data:{
+            'violationId':violationId,
+            'snapshot':$('#patternInfo').val()
+        },
+        success: function (msg){
+            layer.msg("代码模式编辑成功");
         }
     })
 }

@@ -385,6 +385,76 @@ public class AVersionExample {
             return (Criteria) this;
         }
 
+        public Criteria andJarFilePathIsNull() {
+            addCriterion("jar_file_path is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andJarFilePathIsNotNull() {
+            addCriterion("jar_file_path is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andJarFilePathEqualTo(String value) {
+            addCriterion("jar_file_path =", value, "jarFilePath");
+            return (Criteria) this;
+        }
+
+        public Criteria andJarFilePathNotEqualTo(String value) {
+            addCriterion("jar_file_path <>", value, "jarFilePath");
+            return (Criteria) this;
+        }
+
+        public Criteria andJarFilePathGreaterThan(String value) {
+            addCriterion("jar_file_path >", value, "jarFilePath");
+            return (Criteria) this;
+        }
+
+        public Criteria andJarFilePathGreaterThanOrEqualTo(String value) {
+            addCriterion("jar_file_path >=", value, "jarFilePath");
+            return (Criteria) this;
+        }
+
+        public Criteria andJarFilePathLessThan(String value) {
+            addCriterion("jar_file_path <", value, "jarFilePath");
+            return (Criteria) this;
+        }
+
+        public Criteria andJarFilePathLessThanOrEqualTo(String value) {
+            addCriterion("jar_file_path <=", value, "jarFilePath");
+            return (Criteria) this;
+        }
+
+        public Criteria andJarFilePathLike(String value) {
+            addCriterion("jar_file_path like", value, "jarFilePath");
+            return (Criteria) this;
+        }
+
+        public Criteria andJarFilePathNotLike(String value) {
+            addCriterion("jar_file_path not like", value, "jarFilePath");
+            return (Criteria) this;
+        }
+
+        public Criteria andJarFilePathIn(List<String> values) {
+            addCriterion("jar_file_path in", values, "jarFilePath");
+            return (Criteria) this;
+        }
+
+        public Criteria andJarFilePathNotIn(List<String> values) {
+            addCriterion("jar_file_path not in", values, "jarFilePath");
+            return (Criteria) this;
+        }
+
+        public Criteria andJarFilePathBetween(String value1, String value2) {
+            addCriterion("jar_file_path between", value1, value2, "jarFilePath");
+            return (Criteria) this;
+        }
+
+        public Criteria andJarFilePathNotBetween(String value1, String value2) {
+            addCriterion("jar_file_path not between", value1, value2, "jarFilePath");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateTimeIsNull() {
             addCriterion("create_time is null");
             return (Criteria) this;

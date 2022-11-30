@@ -25,7 +25,7 @@
     <!-- Bootstrap-Treeview plugin javascript -->
     <script src="/js/plugins/treeview/bootstrap-treeview.js"></script>
     <script src="/js/violation_info.js"></script>
-<!--    <script src="/js/predict.js"></script>-->
+    <script src="/js/predict.js"></script>
 
 </head>
 
@@ -80,6 +80,7 @@
                         <h2>
                             <span th:text="${session.project.projectName}"></span>:
                             <span th:text="${session.version.versionName}"></span>
+                            <span><a class="btn btn-danger" href="#" onclick="extractSlice()">切片提取</a></span>
                             <span><a class="btn btn-primary" href="#" role="button" data-toggle="modal" data-target="#resultModal" onclick="predict()">预测</a></span>
                         </h2>
                     </div>
@@ -110,7 +111,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-lg-12">
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
                                 <h5>警报列表</h5>
@@ -163,6 +164,10 @@
                                 <table class="table table-hover" id="violationTable"></table>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
                                 <h5>问题详情</h5>
@@ -176,16 +181,40 @@
                                 <div id="evidenceTree"></div>
                             </div>
                         </div>
+                        <div class="ibox float-e-margins">
+<!--                            <form id="codePatternInfo" action="#">-->
+                                <div class="ibox-title">
+<!--                                    <h5>代码模式</h5>-->
+                                    <button class="btn btn-primary" onclick="editCodePattern()">编辑</button>
+                                    <div class="ibox-tools">
+                                        <i class="fa fa-chevron-up"></i>
+                                    </div>
+                                </div>
+                                <div class="ibox-content">
+                                    <label>警告模式：</label>
+                                    <textarea id="patternInfo"></textarea>
+                                </div>
+<!--                            </form>-->
+                        </div>
                     </div>
                     <div class="col-lg-6">
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
-                                <h5>代码片段</h5>
+<!--                                <h5>源代码片段/程序切片</h5>-->
+                                <a class="btn btn-primary" href="#" onclick="watchCode();return false">源代码片段</a>
+                                <a class="btn btn-primary" href="#" onclick="watchSlice();return false">程序切片</a>
+                                <div class="ibox-tools">
+                                    <i class="fa fa-chevron-up"></i>
+                                </div>
                             </div>
                             <div class="ibox-content">
                                 <pre id="codeInfo"></pre>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
                         <div class="panel blank-panel">
                             <div class="panel-heading">
                                 <div class="panel-title m-b-md">
@@ -202,8 +231,8 @@
                             <div class="panel-body">
                                 <div class="tab-content">
                                     <div id="tab-3" class="tab-pane">
-<!--                                        <a class="btn btn-primary" href="#" role="button" data-toggle="modal" data-target="#addKnowledgeModal">添加知识</a>-->
-<!--                                        <table class="table table-hover" id="knowledgeTable"></table>-->
+                                        <!--                                        <a class="btn btn-primary" href="#" role="button" data-toggle="modal" data-target="#addKnowledgeModal">添加知识</a>-->
+                                        <!--                                        <table class="table table-hover" id="knowledgeTable"></table>-->
                                         <div>
                                             <button class="btn btn-primary" onclick="toViewKnowledge()">添加知识</button>
                                             <div id="patternIdDiv" hidden></div>
@@ -250,7 +279,7 @@
             rowStyle: style,
             columns: [{
                 title: '#',
-                field: 'id',
+                field: 'cnt',
                 sortable: true,
                 formatter: function(value, row, index) {
                     return index + 1;
@@ -278,7 +307,10 @@
                 formatter: violationOperateFormatter //自定义方法，添加操作按钮
             }],
             onClickRow:function (row, $element) {
-                watchViolation(row.id);
+                $('#codeInfo').text("");
+                $("#patternInfo").val("");
+                window.localStorage.setItem('violationId',row.id);
+                watchViolation();
                 $('.info').removeClass('info');//移除class
                 $($element).addClass('info');//添加class
             }
@@ -311,6 +343,33 @@
         return {
             classes: style
         };
+    }
+
+    function extractSlice(){
+        layer.open({
+            title: false,
+            content: '程序切片提取中',
+            anim: 3,
+            btn: [],
+            yes: function(index, layero) {
+
+            },
+            cancel: function() {
+                return false
+            }
+        });
+        $.ajax({
+            url: '/slice',
+            method: 'get',
+            success: function (msg) {
+                if (msg === 1){
+                    layer.msg("程序切片提取成功！");
+                }
+                else{
+                    layer.msg("程序切片提取失败！");
+                }
+            }
+        })
     }
 
     function generate() {

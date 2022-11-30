@@ -42,7 +42,7 @@ public class ChartController {
     }
 
     @ResponseBody
-    @GetMapping("/violations/type")
+    @GetMapping("/violations/category")
     public String getViolationsType(){
         AVersion version = (AVersion) session.getAttribute("version");
         List<Violation> violationList = violationService.getViolationsByVersionId(version.getVersionId());

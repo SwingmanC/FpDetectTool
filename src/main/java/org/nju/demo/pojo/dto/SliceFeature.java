@@ -20,7 +20,7 @@ public class SliceFeature {
     public SliceFeature(){
         this.codeLine = 0;
         this.branchNum = 0;
-        this.violationNum = 0;
+        this.violationNum = 1;
     }
 
     public int getCodeLine() {

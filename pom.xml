@@ -91,6 +91,40 @@
             <artifactId>freemarker</artifactId>
             <version>2.3.28</version>
         </dependency>
+
+        <dependency>
+            <groupId>top.anemone.joana</groupId>
+            <artifactId>joana-core</artifactId>
+            <version>RELEASE-2020-04-22</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ibm.wala</groupId>
+            <artifactId>com.ibm.wala.cast</artifactId>
+            <version>1.5.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.wala</groupId>
+            <artifactId>com.ibm.wala.core</artifactId>
+            <version>1.5.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.wala</groupId>
+            <artifactId>com.ibm.wala.cast.java</artifactId>
+            <version>1.5.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.wala</groupId>
+            <artifactId>com.ibm.wala.util</artifactId>
+            <version>1.5.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.9.7</version>
+        </dependency>
+
         <dependency>
             <groupId>weka</groupId>
             <artifactId>weka</artifactId>

@@ -16,7 +16,7 @@ public class CmdUtil {
         File dir = new File(strDir);
         if (!dir.exists()) dir.mkdirs();
         String filePath = Constants.ROOT_PATH+"/tmp/"+projectName+"/"+version+".xml";
-        String abPath = Constants.ROOT_PATH+"/"+path;
+        String abPath = Constants.ROOT_PATH+path;
         String command = "java -jar "+Constants.ROOT_PATH+"/tools/findbugs-3.0.1/lib/findbugs.jar -textui -low -progress -xml -output "+filePath+" "+abPath;
         return getCmd(filePath, command);
     }

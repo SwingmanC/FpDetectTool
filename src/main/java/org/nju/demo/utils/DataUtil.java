@@ -87,11 +87,11 @@ public class DataUtil {
         }
     }
     public static void generateTrainArff(String username,List<Feature> featureList){
-        File arffFile = new File(Constants.ROOT_PATH+"/data/"+username+"/train.arff");
+        File arffFile = new File(Constants.ROOT_PATH+"data/"+username+"/train.arff");
         generateArff(featureList,arffFile);
     }
     public static void generateTestArff(String username,List<Feature> featureList){
-        File arffFile = new File(Constants.ROOT_PATH+"/data/"+username+"/test.arff");
+        File arffFile = new File(Constants.ROOT_PATH+"data/"+username+"/test.arff");
         generateArff(featureList,arffFile);
     }
 }
