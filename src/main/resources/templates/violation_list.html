@@ -43,7 +43,7 @@
                     <div class="navbar-collapse collapse" id="navbar">
                         <ul class="nav navbar-nav">
                             <li>
-                                <a href="#"><i class="fa fa-home"></i> <span class="nav-label">首页</span></a>
+                                <a href="/view/main"><i class="fa fa-home"></i> <span class="nav-label">首页</span></a>
                             </li>
                             <li class="active">
                                 <a href="/view/projects"><i class="fa fa-tasks"></i> <span class="nav-label">我的任务</span></a>
@@ -182,17 +182,24 @@
                             </div>
                         </div>
                         <div class="ibox float-e-margins">
-<!--                            <form id="codePatternInfo" action="#">-->
                                 <div class="ibox-title">
 <!--                                    <h5>代码模式</h5>-->
-                                    <button class="btn btn-primary" onclick="editCodePattern()">编辑</button>
+                                    <button class="btn btn-warning" onclick="snippet2AST()">提取AST</button>
                                     <div class="ibox-tools">
                                         <i class="fa fa-chevron-up"></i>
                                     </div>
                                 </div>
                                 <div class="ibox-content">
-                                    <label>警告模式：</label>
-                                    <textarea id="patternInfo"></textarea>
+                                    <table>
+                                        <tr>
+                                            <td><label for="vectorSnippet">向量：</label></td>
+                                            <td style="width: 350px;"><pre id="vectorSnippet"></pre></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label for="state">预测结果：</label></td>
+                                            <td style="width: 350px;"><pre id="state"></pre></td>
+                                        </tr>
+                                    </table>
                                 </div>
 <!--                            </form>-->
                         </div>
@@ -211,10 +218,6 @@
                                 <pre id="codeInfo"></pre>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-12">
                         <div class="panel blank-panel">
                             <div class="panel-heading">
                                 <div class="panel-title m-b-md">

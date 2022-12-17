@@ -54,7 +54,7 @@ public class CodeUtil {
                 }
             }
         }
-        System.out.println(sb.toString());
+//        System.out.println(sb.toString());
         String[] str = sb.toString().split("\n");
         String className = "";
 
@@ -77,6 +77,30 @@ public class CodeUtil {
                 }
             }
             res.add(tmp.toString());
+        }
+        return res;
+    }
+
+    public static int[] getMethodLocationFromReport(InputStream inputStream,String methodName) throws IOException {
+        int[] res = new int[2];
+        try(BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
+            int flag = 0;
+            String line;
+            while ((line = bufferedReader.readLine()) != null){
+                if (flag > 1) break;
+                if (line.startsWith("-")||line.equals("1 file analyzed.")) flag++;
+                else if (flag == 1){
+                    String[] infos = line.split(" ");
+                    String info = infos[infos.length-1];
+                    String strMethod = info.substring(info.lastIndexOf(':')+1,info.indexOf('@'));
+                    if (strMethod.equals(methodName)){
+                        String strLocation = info.substring(info.indexOf('@')+1,info.indexOf('/')-1);
+                        String[] location = strLocation.split("-");
+                        res[0] = Integer.parseInt(location[0]);
+                        res[1] = Integer.parseInt(location[1]);
+                    }
+                }
+            }
         }
         return res;
     }

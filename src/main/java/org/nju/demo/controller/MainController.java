@@ -1,6 +1,7 @@
 package org.nju.demo.controller;
 
 import freemarker.template.TemplateException;
+import org.apache.xmlbeans.impl.xb.ltgfmt.Code;
 import org.nju.demo.config.Constants;
 import org.nju.demo.entity.*;
 import org.nju.demo.pojo.dto.PatternStatisticsDTO;
@@ -23,7 +24,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.rmi.server.ExportException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -61,6 +61,11 @@ public class MainController {
 
     @Autowired
     private HttpSession session;
+
+    @RequestMapping("/view/main")
+    public String ViewMain(){
+        return "main";
+    }
 
     @RequestMapping("/view/projects")
     public String viewProjects(){
@@ -579,6 +584,85 @@ public class MainController {
         }
         patternService.updatePattern(pattern);
         return violationService.updateViolation(violation);
+    }
+
+    @ResponseBody
+    @RequestMapping("/generateCodeData")
+    public int generateCodeData(){
+        AUser user = (AUser) session.getAttribute("user");
+        List<ViolationCodeVO> violationCodeVOList = new ArrayList<>();
+        List<Violation> violationList = violationService.getClassifiedViolations();
+        int index = 0;
+        for (Violation violation : violationList){
+            if (violation.getStartLine() == -1) continue;
+            ViolationCodeVO violationCodeVO = new ViolationCodeVO();
+//            ViolationCode violationCode = violationService.getViolationCodeByViolationId(violation.getId());
+            AVersion version = versionService.getVersion(violation.getVersionId());
+            Project project = projectService.getProject(version.getProjectId());
+            String[] classNames = violation.getClassName().split("\\.");
+            File file = new File(Constants.ROOT_PATH+"report/"+project.getProjectName()+"/"+version.getVersionName()+"_"+classNames[classNames.length-1]+".txt");
+            if (!file.exists()){
+                continue;
+            }
+            try{
+                int[] lines = CodeUtil.getMethodLocationFromReport(new FileInputStream(file),violation.getMethodName());
+                if (lines[1] == 0) continue;
+                InputStream inputStream = Files.newInputStream(Paths.get(Constants.ROOT_PATH + version.getJavaFilePath() + "/" + violation.getSourcePath()));
+                String snippet = CodeUtil.readCodeFromData(inputStream,lines[0],lines[1]);
+                violationCodeVO.setId(++index);
+                violationCodeVO.setSnippet(snippet);
+                violationCodeVO.setState(violation.getState());
+                violationCodeVOList.add(violationCodeVO);
+            }catch (Exception e){
+                System.out.println("警告"+violation.getId()+"源码提取失败");
+            }
+        }
+        try{
+            CSVUtil.getCsv(user.getUsername(), Constants.DATA_FILE_NAME,violationCodeVOList);
+        }catch (Exception e){
+            System.out.println("数据收集失败");
+        }
+        return 1;
+    }
+
+    @ResponseBody
+    @RequestMapping("/tran2AST/{violationId}")
+    public AstVO tran2AST(@PathVariable("violationId") int violationId){
+        AUser user = (AUser) session.getAttribute("user");
+        AVersion version = (AVersion) session.getAttribute("version");
+        Project project = (Project) session.getAttribute("project");
+        Violation violation = violationService.getViolation(violationId);
+        if (violation.getStartLine() == -1){
+            return null;
+        }
+
+        List<ViolationCodeVO> violationCodeVOList = new ArrayList<>();
+        ViolationCodeVO violationCodeVO = new ViolationCodeVO();
+        String[] classNames = violation.getClassName().split("\\.");
+        File file = new File(Constants.ROOT_PATH+"report/"+project.getProjectName()+"/"+version.getVersionName()+"_"+classNames[classNames.length-1]+".txt");
+        if (!file.exists()){
+            return null;
+        }
+        AstVO astVO = null;
+        try{
+            int[] lines = CodeUtil.getMethodLocationFromReport(new FileInputStream(file),violation.getMethodName());
+            if (lines[1] == 0) {
+                return null;
+            }
+            InputStream inputStream = Files.newInputStream(Paths.get(Constants.ROOT_PATH + version.getJavaFilePath() + "/" + violation.getSourcePath()));
+            String snippet = CodeUtil.readCodeFromData(inputStream,lines[0],lines[1]);
+            violationCodeVO.setId(0);
+            violationCodeVO.setSnippet(snippet);
+            violationCodeVO.setState(Constants.ViolationState.FALSE);
+            violationCodeVOList.add(violationCodeVO);
+
+            CSVUtil.getCsv(user.getUsername(), Constants.SNAPSHOT_FILE_NAME, violationCodeVOList);
+            String snapshotFilePath = Constants.ROOT_PATH + "data/" + user.getUsername() + "/" + Constants.SNAPSHOT_FILE_NAME + ".csv";
+            astVO = CmdUtil.callScriptForPrediction(snapshotFilePath);
+        }catch (Exception e){
+            System.out.println("警告"+violation.getId()+"AST解析失败:"+e.getMessage());
+        }
+        return astVO;
     }
 
 }

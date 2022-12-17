@@ -4,6 +4,10 @@ public class Constants {
 
     public static final String ROOT_PATH = "/Users/sunchen/repo/";
 
+    public static final String DATA_FILE_NAME = "violation_code";
+
+    public static final String SNAPSHOT_FILE_NAME = "snapshot";
+
     public static class Type {
         public static String[] findBugs = {"BAD_PRACTICE","STYLE","MALICIOUS_CODE","CORRECTNESS","MT_CORRECTNESS","PERFORMANCE","I18N","SECURITY","EXPERRIMENTAL"};
 

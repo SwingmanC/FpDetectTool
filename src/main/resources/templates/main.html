@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
     <meta charset="utf-8">
@@ -34,7 +34,7 @@
                 </div>
                 <div class="navbar-collapse collapse" id="navbar">
                     <ul class="nav navbar-nav">
-                        <li>
+                        <li class="active">
                             <a href="/view/main"><i class="fa fa-home"></i> <span class="nav-label">首页</span></a>
                         </li>
                         <li>
@@ -51,15 +51,15 @@
                             <ul role="menu" class="dropdown-menu">
                                 <li><a href="/view/info"><span class="nav-label">个人资料</span></a>
                                 </li>
-                                <li class="active"><a href="/view/password"><span class="nav-label">修改密码</span></a>
+                                <li><a href="/view/password"><span class="nav-label">修改密码</span></a>
                                 </li>
                             </ul>
                         </li>
                     </ul>
                     <ul class="nav navbar-top-links navbar-right">
                         <li>
-                            <a href="/logout">
-                                <i class="fa fa-sign-out"></i> 退出
+                            <a href="/view/repo">
+                                <i class="fa fa-sign-out"></i> 返回
                             </a>
                         </li>
                     </ul>
@@ -67,21 +67,11 @@
             </nav>
         </div>
         <div class="wrapper wrapper-content">
-            <div class="row wrapper border-bottom white-bg page-heading">
-                <div class="col-lg-8">
-                    <h2>修改密码</h2>
-                </div>
-                <div class="col-lg-4">
-                    <h2 style="text-align: right">
-                    </h2>
-                </div>
-            </div>
             <div class="wrapper wrapper-content animated fadeInRight">
                 <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-lg-12">
                         <div class="ibox float-e-margins">
                             <div class="ibox-title">
-                                <h5>修改密码</h5>
                                 <div class="ibox-tools">
                                     <a class="collapse-link">
                                         <i class="fa fa-chevron-up"></i>
@@ -89,25 +79,7 @@
                                 </div>
                             </div>
                             <div class="ibox-content">
-                                <form action="/user/update" class="form-horizontal m-t" id="signupForm" onsubmit="return check();" method="post">
-                                    <div class="form-group">
-                                        <label class="col-sm-3 control-label">新密码：</label>
-                                        <div class="col-sm-8">
-                                            <input id="password" name="password" class="form-control" type="password" required>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-sm-3 control-label">确认密码：</label>
-                                        <div class="col-sm-8">
-                                            <input id="repeatPassword" name="repeatPassword" class="form-control" type="password" required>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="col-sm-8 col-sm-offset-3">
-                                            <button class="btn btn-primary" type="submit">提交</button>
-                                        </div>
-                                    </div>
-                                </form>
+                                <a class="btn btn-primary" href="#" onclick="getCodeData()">数据收集</a>
                             </div>
                         </div>
                     </div>
@@ -120,28 +92,20 @@
             <div>
             </div>
         </div>
-
     </div>
 </div>
 </body>
-<script th:inline="javascript">
-    function check() {
-        let password = $("#password").val();
-        let repeatPassword = $("#repeatPassword").val();
-        if (password === null || repeatPassword === null) {
-            layer.msg("请补全信息", {
-                time: 1500
-            });
-            return false;
-        }
-        if (password !== repeatPassword) {
-            layer.msg("两次密码输入不一致", {
-                time: 1500
-            });
-            return false;
-        }
-        return true;
+<script>
+    function getCodeData(){
+        $.ajax({
+            url:'/generateCodeData',
+            method:'get',
+            success:function (msg){
+                if (msg === 1){
+                    layer.msg('数据收集成功');
+                }
+            }
+        })
     }
 </script>
-
 </html>

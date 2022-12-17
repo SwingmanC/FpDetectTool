@@ -137,3 +137,35 @@ function editCodePattern(){
         }
     })
 }
+function snippet2AST(){
+    layer.open({
+        title: false,
+        content: 'AST提取中，请等待',
+        anim: 3,
+        btn: [],
+        yes: function(index, layero) {
+
+        },
+        cancel: function() {
+            return false
+        }
+    });
+    let violationId = window.localStorage.getItem('violationId');
+    $.ajax({
+        url:'/tran2AST/'+violationId,
+        method:'get',
+        success: function (msg){
+            if (msg !== null){
+                layer.msg("AST提取成功");
+                $("#vectorSnippet").text(msg.vectorSnippet);
+                if(msg.state === 1){
+                    $("#state").text("正报");
+                }else{
+                    $("#state").text("误报");
+                }
+            }else{
+                layer.msg("源代码为空或代码片段信息缺失");
+            }
+        }
+    })
+}

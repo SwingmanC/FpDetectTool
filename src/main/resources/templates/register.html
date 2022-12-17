@@ -21,9 +21,6 @@
     <div class="middle-box text-center loginscreen animated fadeInDown">
         <div>
             <div>
-
-<!--                <h1 class="logo-name">H+</h1>-->
-
             </div>
             <h3>欢迎注册</h3>
             <p>创建一个新账户</p>
@@ -37,12 +34,6 @@
                 <div class="form-group">
                     <input type="password" name="repeatPassword" id="repeatPassword" class="form-control" placeholder="请再次输入密码" required="">
                 </div>
-<!--                <div class="form-group text-left">-->
-<!--                    <div class="checkbox i-checks">-->
-<!--                        <label class="no-padding">-->
-<!--                            <input type="checkbox"><i></i> 我同意注册协议</label>-->
-<!--                    </div>-->
-<!--                </div>-->
                 <div>
                     <span><font th:if="${session.RegisterMsg != null}" th:text="${session.RegisterMsg}" color="red"></font></span>
                 </div>

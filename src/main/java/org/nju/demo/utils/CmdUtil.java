@@ -1,6 +1,7 @@
 package org.nju.demo.utils;
 
 import org.nju.demo.config.Constants;
+import org.nju.demo.pojo.vo.AstVO;
 import sun.font.CStrike;
 
 import java.io.BufferedWriter;
@@ -38,7 +39,6 @@ public class CmdUtil {
         String scriptPath = "/Users/sunchen/PycharmProjects/lizard/lizard.py";
         String targetFilePath = Constants.ROOT_PATH + javaFilePath + "/" + sourceFilePath;
         String command = "python3 " +  scriptPath + " " + targetFilePath;
-        System.out.println(command);
 
         FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
         BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
@@ -52,6 +52,43 @@ public class CmdUtil {
         scanner.close();
 
         return reportFilePath;
+    }
+
+    public static AstVO callScriptForPrediction(String filePath){
+        String scriptPath = "/Users/sunchen/PycharmProjects/alarm_classification/test.py";
+        String command = "python3 "+ scriptPath + " " + filePath;
+        System.out.println(command);
+        Process process = null;
+        AstVO astVO = new AstVO();
+        try {
+            process = Runtime.getRuntime().exec(command);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Scanner scanner = new Scanner(process.getInputStream());
+        int index = 0;
+        while(scanner.hasNextLine()) {
+            String s = scanner.nextLine();
+            System.out.println(s);
+            if (index == 0){
+                astVO.setState(Integer.parseInt(s.substring(s.indexOf('(')+1,s.indexOf(')'))));
+            }
+            else if (index == 1){
+                StringBuilder sb = new StringBuilder(s);
+                int cnt = 0;
+                for(int i=0;i<sb.length();++i){
+                    if (sb.charAt(i) == ',') cnt++;
+                    if (cnt == 5){
+                        sb.insert(i,'\n');
+                        cnt = 0;
+                    }
+                }
+                astVO.setVectorSnippet(sb.toString());
+            }
+            index++;
+        }
+        scanner.close();
+        return astVO;
     }
 
     private static String getCmd(String filePath, String command) throws IOException {
