@@ -2,7 +2,6 @@ package org.nju.demo.utils;
 
 import org.nju.demo.config.Constants;
 import org.nju.demo.pojo.vo.AstVO;
-import sun.font.CStrike;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -57,7 +56,6 @@ public class CmdUtil {
     public static AstVO callScriptForPrediction(String filePath){
         String scriptPath = "/Users/sunchen/PycharmProjects/alarm_classification/test.py";
         String command = "python3 "+ scriptPath + " " + filePath;
-        System.out.println(command);
         Process process = null;
         AstVO astVO = new AstVO();
         try {
@@ -89,6 +87,14 @@ public class CmdUtil {
         }
         scanner.close();
         return astVO;
+    }
+
+    public static void callScriptForCluster() throws IOException {
+        String command = "python3 /Users/sunchen/PycharmProjects/alarm_classification/get_vector.py";
+        Process process = Runtime.getRuntime().exec(command);
+        Scanner scanner = new Scanner(process.getInputStream());
+        while(scanner.hasNextLine()) System.out.println(scanner.nextLine());
+        scanner.close();
     }
 
     private static String getCmd(String filePath, String command) throws IOException {

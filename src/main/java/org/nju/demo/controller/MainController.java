@@ -609,7 +609,7 @@ public class MainController {
                 if (lines[1] == 0) continue;
                 InputStream inputStream = Files.newInputStream(Paths.get(Constants.ROOT_PATH + version.getJavaFilePath() + "/" + violation.getSourcePath()));
                 String snippet = CodeUtil.readCodeFromData(inputStream,lines[0],lines[1]);
-                violationCodeVO.setId(++index);
+                violationCodeVO.setId(violation.getId());
                 violationCodeVO.setSnippet(snippet);
                 violationCodeVO.setState(violation.getState());
                 violationCodeVOList.add(violationCodeVO);
@@ -620,7 +620,7 @@ public class MainController {
         try{
             CSVUtil.getCsv(user.getUsername(), Constants.DATA_FILE_NAME,violationCodeVOList);
         }catch (Exception e){
-            System.out.println("数据收集失败");
+            System.out.println("数据收集失败:"+e.getMessage());
         }
         return 1;
     }
@@ -663,6 +663,56 @@ public class MainController {
             System.out.println("警告"+violation.getId()+"AST解析失败:"+e.getMessage());
         }
         return astVO;
+    }
+
+    @ResponseBody
+    @RequestMapping("/cluster")
+    public List<ViolationClusterVO> cluster(){
+        List<ViolationClusterVO> violationList = new ArrayList<>();
+        try {
+            CmdUtil.callScriptForCluster();
+            KMeans.readTable(KMeans.filePath);
+            ArrayList<ArrayList<Float>> rlist = KMeans.randomList();
+            KMeans.eudistance(rlist);
+            KMeans.kmeans();
+            for (ArrayList<Float> vector : KMeans.alist){
+                ViolationClusterVO violationClusterVO = new ViolationClusterVO();
+                float f = vector.get(0);
+                int id = (int) f;
+                Violation violation = violationService.getViolation(id);
+                AVersion version = versionService.getVersion(violation.getVersionId());
+                Project project = projectService.getProject(version.getProjectId());
+                violationClusterVO.setId(violation.getId());
+                violationClusterVO.setProjectName(project.getProjectName());
+                violationClusterVO.setVersionName(version.getVersionName());
+                violationClusterVO.setType(violation.getType());
+
+                String sourcePath = violation.getSourcePath();
+                violationClusterVO.setFileName(sourcePath.substring(sourcePath.lastIndexOf('/')+1));
+                violationClusterVO.setState(Constants.ViolationState.FALSE);
+                violationList.add(violationClusterVO);
+            }
+            for (ArrayList<Float> vector : KMeans.blist){
+                ViolationClusterVO violationClusterVO = new ViolationClusterVO();
+                float f = vector.get(0);
+                int id = (int) f;
+                Violation violation = violationService.getViolation(id);
+                AVersion version = versionService.getVersion(violation.getVersionId());
+                Project project = projectService.getProject(version.getProjectId());
+                violationClusterVO.setId(violation.getId());
+                violationClusterVO.setProjectName(project.getProjectName());
+                violationClusterVO.setVersionName(version.getVersionName());
+                violationClusterVO.setType(violation.getType());
+
+                String sourcePath = violation.getSourcePath();
+                violationClusterVO.setFileName(sourcePath.substring(sourcePath.lastIndexOf('/')+1));
+                violationClusterVO.setState(Constants.ViolationState.TRUE);
+                violationList.add(violationClusterVO);
+            }
+        }catch (Exception e){
+            System.out.println("kmeans聚类失败:"+e.getMessage());
+        }
+        return violationList;
     }
 
 }
