@@ -1,6 +1,7 @@
 package org.nju.demo.controller;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.nju.demo.config.Constants;
 import org.nju.demo.entity.AVersion;
 import org.nju.demo.entity.Violation;
@@ -43,7 +44,7 @@ public class ChartController {
 
     @ResponseBody
     @GetMapping("/violations/category")
-    public String getViolationsType(){
+    public int[] getViolationsType(){
         AVersion version = (AVersion) session.getAttribute("version");
         List<Violation> violationList = violationService.getViolationsByVersionId(version.getVersionId());
         int[] count = {0,0,0,0,0,0,0,0,0};
@@ -56,15 +57,7 @@ public class ChartController {
                 }
             }
         }
-        List<Map> outputs = new ArrayList<>();
-        for(int i=0;i<count.length;++i){
-            Map output = new TreeMap();
-            output.put("value",count[i]);
-            output.put("name", Constants.Type.findBugs[i]);
-            outputs.add(output);
-        }
-        JSONArray jsonArray = JSONArray.fromObject(outputs);
-        return jsonArray.toString();
+        return count;
     }
 
     @ResponseBody

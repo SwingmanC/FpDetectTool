@@ -1,6 +1,11 @@
 $(function() {
     let violation_category = echarts.init(document.getElementById('violation_category'));
     $.get('/violations/category', function(data) {
+        console.log(data);
+        // violation_category.resize({
+        //     width: 800,
+        //     height: 400
+        // });
         violation_category.setOption({
             tooltip: {
                 trigger: 'axis'
@@ -14,7 +19,7 @@ $(function() {
             }],
             calculable: true,
             series: [{
-                name: '漏洞类型',
+                name: '漏洞种类',
                 type: 'bar',
                 data: data
             }]

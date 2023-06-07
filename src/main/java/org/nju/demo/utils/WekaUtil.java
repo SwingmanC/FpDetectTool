@@ -32,11 +32,22 @@ public class WekaUtil {
             trainInstances.setClassIndex(trainInstances.numAttributes()-1);
             j48Classifier.buildClassifier(trainInstances);
 
+            int tp = 0,fp = 0,fn = 0,tn = 0;
             for (int i=0;i<sum;++i){
-//                System.out.println(j48Classifier.classifyInstance(testInstances.instance(i))+" "+j48Classifier.distributionForInstance(testInstances.instance(i))[1]);
-//                res[i] = j48Classifier.classifyInstance(testInstances.instance(i));
-                res[i] = j48Classifier.distributionForInstance(testInstances.instance(i))[1];
+                res[i] = j48Classifier.classifyInstance(testInstances.instance(i));
+//                res[i] = j48Classifier.distributionForInstance(testInstances.instance(i))[1];
+                double label = testInstances.instance(i).classValue();
+                if (res[i] == 1 && label == 1) tp++;
+                if (res[i] == 1 && label == 0) fp++;
+                if (res[i] == 0 && label == 1) fn++;
+                if (res[i] == 0 && label == 0) tn++;
+//                System.out.println(res[i]);
             }
+            System.out.println("J48 classification precision:"+((tp+tn)*1.0/sum));
+            System.out.println("True positive:"+tp);
+            System.out.println("False positive:"+fp);
+            System.out.println("False negative:"+fn);
+            System.out.println("True negative:"+tn);
         }catch (Exception e){
             e.printStackTrace();
         }

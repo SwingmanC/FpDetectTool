@@ -34,6 +34,7 @@ public class XMLUtil {
             BugInstance bugInstance = new BugInstance();
             bugInstance.setType(bug.getAttribute("type"));
             bugInstance.setPriority(Integer.parseInt(bug.getAttribute("priority")));
+            bugInstance.setRank(Integer.parseInt(bug.getAttribute("rank")));
             bugInstance.setCategory(bug.getAttribute("category"));
 
             Element classElement = (Element) bug.getElementsByTagName("Class").item(0);

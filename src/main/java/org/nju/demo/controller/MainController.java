@@ -29,6 +29,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static org.nju.demo.config.Constants.FIXED_LENGTH;
+import static org.nju.demo.config.Constants.testProjectName;
+
 @Controller
 public class MainController {
 
@@ -113,6 +116,7 @@ public class MainController {
     public List<AVersion> getVersions(){
         Project project = (Project) session.getAttribute("project");
         return versionService.getVersionsByProjectId(project.getProjectId());
+//        return versionService.getVersionList();
     }
 
     @ResponseBody
@@ -135,6 +139,7 @@ public class MainController {
             type = p.getPatternName();
         }
         violationList = violationService.getViolationList(version.getVersionId(),priority,type,state);
+//        violationList = violationService.getViolationList("",priority,type,state);
 
         List<ViolationVO> violationVOList = new ArrayList<>();
         for(Violation violation : violationList){
@@ -523,6 +528,7 @@ public class MainController {
     @RequestMapping("/feature")
     public int extractFeature(){
         AUser user = (AUser) session.getAttribute("user");
+//        List<Violation> trainDataList = getTrainDataList(FIXED_LENGTH,violationService.getClassifiedViolations());
         try {
             DataUtil.generateTrainArff(user.getUsername(),featureService.getFeatureList(violationService.getClassifiedViolations()));
         } catch (IOException e) {
@@ -594,11 +600,12 @@ public class MainController {
         List<Violation> violationList = violationService.getClassifiedViolations();
         int index = 0;
         for (Violation violation : violationList){
-            if (violation.getStartLine() == -1) continue;
+            if (violation.getStartLine() == -1||violation.getMethodName().equals("")) continue;
             ViolationCodeVO violationCodeVO = new ViolationCodeVO();
 //            ViolationCode violationCode = violationService.getViolationCodeByViolationId(violation.getId());
             AVersion version = versionService.getVersion(violation.getVersionId());
             Project project = projectService.getProject(version.getProjectId());
+//            String sourceFilePath = violation.getSourcePath();
             String[] classNames = violation.getClassName().split("\\.");
             File file = new File(Constants.ROOT_PATH+"report/"+project.getProjectName()+"/"+version.getVersionName()+"_"+classNames[classNames.length-1]+".txt");
             if (!file.exists()){
@@ -607,6 +614,7 @@ public class MainController {
             try{
                 int[] lines = CodeUtil.getMethodLocationFromReport(new FileInputStream(file),violation.getMethodName());
                 if (lines[1] == 0) continue;
+                System.out.println("警告"+violation.getId()+"源码开始提取");
                 InputStream inputStream = Files.newInputStream(Paths.get(Constants.ROOT_PATH + version.getJavaFilePath() + "/" + violation.getSourcePath()));
                 String snippet = CodeUtil.readCodeFromData(inputStream,lines[0],lines[1]);
                 violationCodeVO.setId(violation.getId());
@@ -670,7 +678,7 @@ public class MainController {
     public List<ViolationClusterVO> cluster(){
         List<ViolationClusterVO> violationList = new ArrayList<>();
         try {
-            CmdUtil.callScriptForCluster();
+//            CmdUtil.callScriptForCluster();
             KMeans.readTable(KMeans.filePath);
             ArrayList<ArrayList<Float>> rlist = KMeans.randomList();
             KMeans.eudistance(rlist);
@@ -713,6 +721,23 @@ public class MainController {
             System.out.println("kmeans聚类失败:"+e.getMessage());
         }
         return violationList;
+    }
+
+    private List<Violation> getTrainDataList(int fixedLength,List<Violation> violationList){
+        List<Violation> trainDataList = new ArrayList<>();
+        int l = fixedLength/2,size = violationList.size();
+        int r = size - (int) ((int)violationList.size()*0.7);
+
+        for (int i=0;i<l;++i){
+            trainDataList.add(violationList.get(i));
+        }
+        for (int i=r;i<size;++i){
+            trainDataList.add(violationList.get(i));
+        }
+        System.out.println("The number of Train data is:"+trainDataList.size());
+        System.out.println("start index:"+l);
+        System.out.println("end index:"+r);
+        return trainDataList;
     }
 
 }

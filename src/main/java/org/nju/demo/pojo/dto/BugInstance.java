@@ -6,6 +6,7 @@ public class BugInstance {
     private String type;
     private String category;
     private int priority;
+    private int rank;
     private String classname;
     private String sourcePath;
     private int start;
@@ -37,6 +38,14 @@ public class BugInstance {
     }
     public void setPriority(int priority) {
         this.priority = priority;
+    }
+
+    public int getRank() {
+        return rank;
+    }
+
+    public void setRank(int rank) {
+        this.rank = rank;
     }
 
     public String getClassname() {

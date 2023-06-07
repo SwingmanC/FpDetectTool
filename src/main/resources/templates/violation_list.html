@@ -86,7 +86,8 @@
                     </div>
                     <div class="col-lg-4">
                         <h2 style="text-align: right">
-<!--                            <span><a class="btn btn-primary" href="#" role="button" onclick="generate()">导出</a></span>-->
+<!--                            <span><a class="btn btn-default" href="#" onclick="updatePattern()">置信度更新</a></span>-->
+<!--                            <span><a class="btn btn-default" href="#" onclick="extractCode()">源码提取</a></span>-->
                             <span><a class="btn btn-warning" href="/view/violations/charts" role="button">统计</a></span>
                         </h2>
                     </div>
@@ -261,7 +262,7 @@
 <script th:inline="javascript">
     $(document).ready(function() {
         $("#violationTable").bootstrapTable({
-            url: "/violations", //请求地址
+            url: "/violations", //请求地址'/violations'
             queryParams:function(params){
                 let data = {
                     priority:$('#prioritySelect').val(),
@@ -442,6 +443,30 @@
     function toViewKnowledge(){
         let patternId = $("#patternIdDiv").text();
         if(patternId !== '') window.location.href = '/view/knowledge/'+patternId;
+    }
+    function updatePattern(){
+        $.ajax({
+            url:'/test/updatePattern',
+            type:'get',
+            success:function (msg){
+                layer.msg("置信值更新成功");
+                setTimeout(function() {
+                    location.reload();
+                }, 1500);
+            }
+        })
+    }
+    function extractCode(){
+        $.ajax({
+            url:'/test/extractCode',
+            type:'get',
+            success:function (msg){
+                layer.msg("源码提取成功");
+                setTimeout(function() {
+                    location.reload();
+                }, 1500);
+            }
+        })
     }
 </script>
 

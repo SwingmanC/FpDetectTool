@@ -28,7 +28,7 @@ public class ViolationServiceImpl implements ViolationService {
         ViolationExample example = new ViolationExample();
         ViolationExample.Criteria criteria = example.createCriteria();
 
-        criteria.andVersionIdEqualTo(versionId);
+        if (!versionId.equals("")) criteria.andVersionIdEqualTo(versionId);
         if (priority>0) criteria.andPriorityEqualTo(priority);
         if (!type.equals("")) criteria.andTypeEqualTo(type);
         if (state>=-1) criteria.andStateEqualTo(state);
@@ -68,6 +68,16 @@ public class ViolationServiceImpl implements ViolationService {
 
         criteria.andStateNotEqualTo(Constants.ViolationState.UNCLASSIFIED)
                 .andStateNotEqualTo(Constants.ViolationState.UNKNOWN);
+
+        return violationMapper.selectByExample(example);
+    }
+
+    @Override
+    public List<Violation> getViolationByRange(int start,int end) {
+        ViolationExample example = new ViolationExample();
+        ViolationExample.Criteria criteria = example.createCriteria();
+
+        criteria.andIdBetween(start,end);
 
         return violationMapper.selectByExample(example);
     }
@@ -147,5 +157,10 @@ public class ViolationServiceImpl implements ViolationService {
         criteria.andViolationIdEqualTo(violationId);
 
         return violationCodeMapper.deleteByExample(example);
+    }
+
+    @Override
+    public int deleteViolation(int id) {
+        return violationMapper.deleteByPrimaryKey(id);
     }
 }

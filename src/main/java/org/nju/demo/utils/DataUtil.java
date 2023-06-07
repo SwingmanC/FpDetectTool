@@ -14,7 +14,8 @@ public class DataUtil {
         try{
             if(!file.exists()) file.createNewFile();
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
-            bufferedWriter.write("@relation feature");
+            bufferedWriter.write("@relation violation");
+            bufferedWriter.newLine();
             bufferedWriter.newLine();
             bufferedWriter.write("@attribute slice_code_line numeric");
             bufferedWriter.newLine();
@@ -55,6 +56,7 @@ public class DataUtil {
             bufferedWriter.write("@attribute likelihood numeric");
             bufferedWriter.newLine();
             bufferedWriter.write("@attribute label {0,1}");
+            bufferedWriter.newLine();
             bufferedWriter.newLine();
             bufferedWriter.write("@data");
             for (Feature feature : featureList){

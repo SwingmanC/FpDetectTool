@@ -18,4 +18,6 @@ public interface VersionService {
     int updateVersion(AVersion version);
 
     int deleteVersionByProjectId(String projectId);
+
+    List<AVersion> getVersionList();
 }

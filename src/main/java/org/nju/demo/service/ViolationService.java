@@ -19,6 +19,8 @@ public interface ViolationService {
 
     List<Violation> getClassifiedViolations();
 
+    List<Violation> getViolationByRange(int start,int end);
+
     ViolationCode getViolationCodeByViolationId(int violationId);
 
     int countTrueViolationByPattern(String versionId,String type);
@@ -34,5 +36,7 @@ public interface ViolationService {
     int deleteViolationByVersionId(String versionId);
 
     int deleteViolationCodeByViolationId(int violationId);
+
+    int deleteViolation(int id);
 
 }

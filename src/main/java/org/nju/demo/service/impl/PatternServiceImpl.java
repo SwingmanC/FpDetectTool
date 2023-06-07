@@ -22,7 +22,9 @@ public class PatternServiceImpl implements PatternService {
 
         criteria.andPatternNameEqualTo(patternName);
 
-        return patternMapper.selectByExample(example).get(0);
+        List<Pattern> patternList = patternMapper.selectByExample(example);
+        if (patternList.size() > 0) return patternList.get(0);
+        else return null;
     }
 
     @Override
@@ -43,6 +45,11 @@ public class PatternServiceImpl implements PatternService {
     @Override
     public List<Pattern> getPatternListByKeyword(String keyword) {
         return patternMapper.selectByKeyword(keyword);
+    }
+
+    @Override
+    public int addPattern(Pattern pattern) {
+        return patternMapper.insert(pattern);
     }
 
     @Override

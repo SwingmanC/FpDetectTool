@@ -62,6 +62,7 @@ public class JoanaSlicer implements Slicer {
         } else {
             try {
                 sdg = this.buildSDG(func);
+//                System.out.println(sdg);
                 LOGGER.info("Computing Slice...");
             } catch (IOException | GraphIntegrity.UnsoundGraphException | CancelException | NotFoundException | ClassCastException e) {
                 throw new SlicerException(e.getMessage(), e);
@@ -141,7 +142,7 @@ public class JoanaSlicer implements Slicer {
         String exclusionFile = "/Users/sunchen/IntelliJProject/FpDetectTool/src/main/java/org/nju/demo/utils/joanacore/Java60RegressionExclusions.txt";
         final AnalysisScope scope = AnalysisScopeReader.readJavaScope(
                 scopeFile, (new FileProvider()).getFile(exclusionFile), classLoader);
-        for (File appJar : appJars) {
+         for (File appJar : appJars) {
             scope.addToScope(ClassLoaderReference.Application, new JarStreamModule(new FileInputStream(appJar)));
         }
         if (libJars != null) {
@@ -222,12 +223,10 @@ public class JoanaSlicer implements Slicer {
 
     public static void main(String[] args) throws ClassHierarchyException, IOException, SlicerException {
         List<File> apps = new ArrayList<>();
-        apps.add(new File("/Users/sunchen/DataSet/xxl-job-20220420/out/artifacts/xxl_job_admin_jar/xxl-job-admin.jar"));
+        apps.add(new File("/Users/sunchen/data/commons-bcel/commons-bcel-f1b16c36f6c1bd1ef6e27b227c5fdf7479107a0f/target/bcel-6.5.0-SNAPSHOT.jar"));
         JoanaSlicer slicer = new JoanaSlicer();
         slicer.config(apps,null , null);
-        System.out.println(slicer.computeSlice(new Func("com.xxl.job.admin.core.trigger.XxlJobTrigger" , "isNumeric" , "(Ljava/lang/String;)Z") ,
-                new Location("com/xxl/job/admin/core/trigger/XxlJobTrigger.java" ,96 , 99)));
-//        System.out.println(slicer.computeSlice(new Func("org.owasp.benchmark.testcode.BenchmarkTest00883" , "doPost" , "(Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)V") ,
-//                new Location("org/owasp/benchmark/testcode/BenchmarkTest00883.java" , 57 , 57)));
+        System.out.println(slicer.computeSlice(new Func("org.apache.bcel.classfile.Module" , "getExportsTable" , "()[Lorg/apache/bcel/classfile/ModuleExports;") ,
+                new Location("org/apache/bcel/classfile/Module.java" ,121 , 121)));
     }
 }

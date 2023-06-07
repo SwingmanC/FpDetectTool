@@ -76,6 +76,7 @@
                             <div class="ibox-title">
                                 <a class="btn btn-primary" href="#" onclick="getCodeData()">数据收集</a>
                                 <a class="btn btn-warning" href="#" onclick="cluster()">聚类分析</a>
+<!--                                <a class="btn btn-default" href="#" onclick="getSummary()">汇总</a>-->
                                 <div class="ibox-tools">
                                     <a class="collapse-link">
                                         <i class="fa fa-chevron-up"></i>
@@ -100,45 +101,6 @@
 </div>
 </body>
 <script>
-    // $(document).ready(function() {
-    //     $("#violationTable").bootstrapTable({
-    //         url:'/cluster',
-    //         type:'get',
-    //         striped: true, //是否显示行间隔色
-    //         pageNumber: 1, //初始化加载第一页
-    //         pagination: true, //是否分页
-    //         sidePagination: 'client', //server:服务器端分页|client：前端分页
-    //         pageSize: 5, //单页记录数
-    //         pageList: [1, 5, 10], //可选择单页记录数
-    //         showRefresh: true, //刷新按钮
-    //         rowStyle: style,
-    //         columns: [{
-    //             title: '#',
-    //             field: 'cnt',
-    //             sortable: true,
-    //             formatter: function(value, row, index) {
-    //                 return index + 1;
-    //             }
-    //         }, {
-    //             title: '漏洞类型',
-    //             field: 'type',
-    //             sortable: true
-    //         }, {
-    //             title: '优先级',
-    //             field: 'priority',
-    //             sortable: true
-    //         }, {
-    //             title: '文件名称',
-    //             field: 'sourcePath',
-    //             sortable: true
-    //         }, {
-    //             title: '结果',
-    //             field: 'state',
-    //             sortable: true,
-    //             formatter: num2Str
-    //         }],
-    //     })
-    // });
     function getCodeData(){
         $.ajax({
             url:'/generateCodeData',
@@ -225,6 +187,18 @@
         }else{
             return "误报";
         }
+    }
+    function getSummary(){
+        $.ajax({
+            url:'/test/evaluation',
+            type:'get',
+            success:function (msg){
+                layer.msg("汇总成功");
+                setTimeout(function() {
+                    location.reload();
+                }, 1500);
+            }
+        })
     }
 </script>
 </html>

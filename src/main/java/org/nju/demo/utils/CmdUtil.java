@@ -37,6 +37,7 @@ public class CmdUtil {
         }
         String scriptPath = "/Users/sunchen/PycharmProjects/lizard/lizard.py";
         String targetFilePath = Constants.ROOT_PATH + javaFilePath + "/" + sourceFilePath;
+//        String targetFilePath = javaFilePath + "/" + sourceFilePath;
         String command = "python3 " +  scriptPath + " " + targetFilePath;
 
         FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());

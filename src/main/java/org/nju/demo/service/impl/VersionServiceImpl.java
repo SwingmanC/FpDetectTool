@@ -58,4 +58,9 @@ public class VersionServiceImpl implements VersionService {
 
         return versionMapper.deleteByExample(versionExample);
     }
+
+    @Override
+    public List<AVersion> getVersionList() {
+        return versionMapper.selectByExample(new AVersionExample());
+    }
 }

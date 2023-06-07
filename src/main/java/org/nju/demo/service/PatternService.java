@@ -14,6 +14,8 @@ public interface PatternService {
 
     List<Pattern> getPatternListByKeyword(String keyword);
 
+    int addPattern(Pattern pattern);
+
     int updatePattern(Pattern pattern);
 
     long countByCategoryId(int categoryId);

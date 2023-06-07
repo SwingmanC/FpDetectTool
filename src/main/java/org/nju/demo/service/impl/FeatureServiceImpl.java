@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.nju.demo.config.Constants.testProjectName;
+
 @Service
 public class FeatureServiceImpl implements FeatureService {
 
@@ -52,6 +54,7 @@ public class FeatureServiceImpl implements FeatureService {
             if (!hm.containsKey(violation.getVersionId())) {
                 AVersion version = versionMapper.selectByPrimaryKey(violation.getVersionId());
                 hm.put(version.getVersionId(),version.getJavaFilePath());
+//                hm.put(violation.getVersionId(),"/Users/sunchen/data/"+testProjectName+"/"+testProjectName+"-"+violation.getVersionId()+"/");
             }
             String javaFilePath = hm.get(violation.getVersionId());
             if (javaFilePath != null && !javaFilePath.equals("")){
@@ -73,6 +76,7 @@ public class FeatureServiceImpl implements FeatureService {
             AVersion version = versionMapper.selectByPrimaryKey(violation.getVersionId());
             Project project = projectMapper.selectByPrimaryKey(version.getProjectId());
             String reportPath = CmdUtil.generateSourceFileReport(project.getProjectName(),version.getVersionName(),javaFilePath,violation.getSourcePath());
+//            String reportPath = CmdUtil.generateSourceFileReport(testProjectName,violation.getVersionId(),javaFilePath,sourceFilePath);
             List<String> featureInfoList = CodeUtil.getDataFromLizard(new FileInputStream(reportPath));
             int n = featureInfoList.size();
             for (int i=0;i<n-1;++i){
@@ -207,12 +211,13 @@ public class FeatureServiceImpl implements FeatureService {
         ViolationExample example = new ViolationExample();
         ViolationExample.Criteria criteria = example.createCriteria();
 
-        criteria.andVersionIdEqualTo(violation.getVersionId());
+        criteria.andVersionIdEqualTo(violation.getVersionId())
+                .andSourcePathEqualTo(violation.getSourcePath());
         List<Violation> violationList = violationMapper.selectByExample(example);
 
         int cnt = 0;
         for(Violation v : violationList){
-            if (v.getMethodName().equals(violation.getMethodName()) && v.getClassName().equals(violation.getClassName())){
+            if (v.getMethodName().equals(violation.getMethodName())){
                 cnt++;
             }
         }
@@ -223,15 +228,8 @@ public class FeatureServiceImpl implements FeatureService {
         ViolationExample example = new ViolationExample();
         ViolationExample.Criteria criteria = example.createCriteria();
 
-        criteria.andVersionIdEqualTo(violation.getVersionId());
-        List<Violation> violationList = violationMapper.selectByExample(example);
-
-        int cnt = 0;
-        for(Violation v : violationList){
-            if (v.getClassName().equals(violation.getClassName())){
-                cnt++;
-            }
-        }
-        return cnt;
+        criteria.andVersionIdEqualTo(violation.getVersionId())
+                .andSourcePathEqualTo(violation.getSourcePath());
+        return (int) violationMapper.countByExample(example);
     }
 }

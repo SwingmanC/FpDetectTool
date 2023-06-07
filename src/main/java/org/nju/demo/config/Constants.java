@@ -9,6 +9,8 @@ public class Constants {
     public static final String SNAPSHOT_FILE_NAME = "snapshot";
 
     public static class Type {
+//        public static String[] findBugs = {"BAD_PRACTICE","DODGY_CODE","MALICIOUS_CODE","CORRECTNESS","Multithreaded correctness","PERFORMANCE","I18N","SECURITY","EXPERRIMENTAL"};
+
         public static String[] findBugs = {"BAD_PRACTICE","STYLE","MALICIOUS_CODE","CORRECTNESS","MT_CORRECTNESS","PERFORMANCE","I18N","SECURITY","EXPERRIMENTAL"};
 
         public static String[] PMD = {"Best Practices","Code Style","Design","Documentation","Error Prone","Multithreading","Performance","Security"};
@@ -48,5 +50,8 @@ public class Constants {
         public static final String EMAIL = "123@nju.edu.cn";
         public static final String TELEPHONE = "10000";
     }
+
+    public static final String testProjectName = "maven-dependency-plugin";
+    public static final int FIXED_LENGTH = 59;
 
 }
